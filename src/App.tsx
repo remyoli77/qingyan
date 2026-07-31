@@ -47,8 +47,9 @@ export default function App() {
     applyDynastyClass(dynasty);
   }, [dynasty]);
 
+  // basename 取 Vite 的 base · GitHub Pages 子路径部署时自动适配 · Electron/Web 根路径时为 "/"
   return (
-    <Router>
+    <Router basename={import.meta.env.BASE_URL}>
       <PageRoutes onOpenSettings={() => setSettingsOpen(true)} />
       <SettingsDrawer open={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </Router>

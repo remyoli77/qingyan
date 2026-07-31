@@ -123,7 +123,9 @@ Electron 打包，支持 Windows / macOS（Intel + Apple Silicon）/ Linux 三�
 
 ### Web 版
 
-访问在线演示：`https://qingyan.example.com`（部署后替换）
+在线演示：**https://remyoli39-qiqi.github.io/qingyan/**
+
+> 推送到 `main` 分支后,GitHub Actions 会自动构建并发布到 GitHub Pages。
 
 ## 快速开始
 

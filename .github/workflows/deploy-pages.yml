@@ -1,0 +1,53 @@
+# 部署 Web 版到 GitHub Pages
+# 推送到 main 后自动构建并发布到 https://<user>.github.io/qingyan/
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# 允许 Pages 写入
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同一时间只跑一条部署 · 避免并发冲突
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Build (base 指向 /qingyan/ 子路径)
+        # --base 覆盖 vite.config 的 './' · 让 GitHub Pages 子路径下资源能正确加载
+        run: npx vite build --base=/qingyan/
+      - name: Add SPA fallback
+        # GitHub Pages 是静态托管 · 刷新子路由会 404 · 复制 index.html 为 404.html 兜底
+        run: cp dist/index.html dist/404.html
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
