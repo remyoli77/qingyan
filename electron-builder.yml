@@ -1,0 +1,64 @@
+# electron-builder 配置 · 三平台安装包
+# Win: NSIS .exe · Mac: DMG + zip (Intel + Apple Silicon) · Linux: AppImage + deb
+appId: ink.qingyan.app
+productName: 青砚
+copyright: Copyright © 2025 青砚 QingYan
+artifactName: ${productName}-${version}-${os}-${arch}.${ext}
+
+directories:
+  output: release
+  buildResources: build
+
+files:
+  - dist/**/*
+  - electron/**/*
+  - package.json
+
+# Mac 应用图标与签名配置
+mac:
+  category: public.app-category.lifestyle
+  target:
+    - target: dmg
+      arch:
+        - x64
+        - arm64
+    - target: zip
+      arch:
+        - x64
+        - arm64
+  darkModeSupported: true
+  hardenedRuntime: true
+  # 未提供开发者证书时 · CI 会跳过签名与公证 · 用户首次打开需手动允许
+  gatekeeperAssess: false
+
+dmg:
+  artifactName: ${productName}-${version}-mac-${arch}.dmg
+  contents:
+    - x: 130
+      y: 220
+    - x: 410
+      y: 220
+      type: link
+      path: /Applications
+
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+  icon: build/icon.png
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  artifactName: ${productName}-${version}-win-${arch}.exe
+  shortcutName: 青砚
+
+linux:
+  target:
+    - AppImage
+    - deb
+  icon: build/icon.png
+  category: Office
+  maintainer: QingYan Open Source

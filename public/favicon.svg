@@ -1,0 +1,5 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="32" height="32" fill="#A4392F"/>
+  <text x="16" y="22" text-anchor="middle" font-family="serif" font-size="18" fill="#F8F3E7" font-weight="700">青</text>
+  <rect x="1" y="1" width="30" height="30" fill="none" stroke="#F8F3E7" stroke-opacity="0.5" stroke-width="1"/>
+</svg>

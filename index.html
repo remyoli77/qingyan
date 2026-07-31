@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>青砚 · 国风 AI Agent</title>
+    <!-- 朝代主题 · 在 React 挂载前从 localStorage 读取并写入 <html> 类名，避免闪烁 -->
+    <script>
+      (function () {
+        try {
+          var raw = localStorage.getItem('qingyan-dynasty');
+          var dynasty = raw ? JSON.parse(raw).state?.dynasty : null;
+          var valid = ['song', 'ming', 'qin', 'tang'];
+          var d = valid.indexOf(dynasty) >= 0 ? dynasty : 'song';
+          document.documentElement.classList.add('theme-' + d);
+        } catch (e) {
+          document.documentElement.classList.add('theme-song');
+        }
+      })();
+    </script>
+    <!-- 字体非阻塞加载：避免沙箱环境无法访问 Google Fonts 时阻塞渲染导致白屏 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=ZCOOL+XiaoWei&display=swap"
+      onload="this.onload=null;this.rel='stylesheet'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=ZCOOL+XiaoWei&display=swap"
+      />
+    </noscript>
+    <script type="module">
+      if (import.meta.hot?.on) {
+        import.meta.hot.on('vite:error', (error) => {
+          if (error.err) {
+            console.error(
+              [error.err.message, error.err.frame].filter(Boolean).join('\n'),
+            )
+          }
+        })
+      }
+    </script>
+  </head>
+  <body>
+    <!-- 开场 · 毛笔书写佳话 · 写毕时空穿越过渡至主应用 · 置于 root 之外避免被 React 清空 -->
+    <div id="boot-loading" style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at center, rgb(var(--c-xuanzhi-light-rgb)) 0%, rgb(var(--c-xuanzhi-rgb)) 65%, rgb(var(--c-xuanzhi-deep-rgb)) 100%);overflow:hidden;">
+      <!-- 宣纸纹理 · 微噪点 -->
+      <div style="position:absolute;inset:0;background-image:radial-gradient(circle at 20% 30%, rgb(var(--c-zheshi-rgb) / 0.04) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgb(var(--c-qingbi-rgb) / 0.03) 0%, transparent 50%);pointer-events:none;"></div>
+      <!-- 墨晕底 · 缓缓扩散 -->
+      <div style="position:absolute;width:60vmin;height:60vmin;border-radius:50%;background:radial-gradient(circle, rgb(var(--c-daiqing-rgb) / 0.06) 0%, transparent 70%);animation:boot-halo 6s ease-in-out infinite;pointer-events:none;"></div>
+      <div id="boot-stage" style="position:relative;text-align:center;padding:0 5vmin;"></div>
+    </div>
+    <script>
+      (function () {
+        // 四朝佳话 · 各取一句传世名句 · 呼应朝代精神
+        var VERSE = {
+          song: { text: '一蓑烟雨任平生', author: '—— 苏轼《定风波》' },
+          ming: { text: '不许丹心负白头', author: '—— 于谦《岳忠武王祠》' },
+          qin:  { text: '岂曰无衣 与子同袍', author: '——《诗经·秦风·无衣》' },
+          tang: { text: '海内存知己 天涯若比邻', author: '—— 王勃《送杜少府之任蜀州》' }
+        };
+        try {
+          var raw = localStorage.getItem('qingyan-dynasty');
+          var dynasty = raw ? JSON.parse(raw).state?.dynasty : null;
+        } catch (e) { dynasty = null; }
+        var d = ['song','ming','qin','tang'].indexOf(dynasty) >= 0 ? dynasty : 'song';
+        var v = VERSE[d];
+        var chars = Array.from(v.text);
+        // 每字 0.5s 书写 · 描边勾勒 + 填充渐显 · 笔锋光点跟随
+        var perChar = 0.5;
+        var total = chars.length * perChar;
+        // 构建逐字 SVG · 描边勾勒模拟毛笔起笔 · 填充渐显模拟落墨
+        var charSvg = chars.map(function (ch, i) {
+          var delay = i * perChar;
+          return '<span class="boot-char" style="animation-delay:' + delay + 's">' + ch + '</span>';
+        }).join('');
+        var stage = document.getElementById('boot-stage');
+        stage.innerHTML =
+          '<div class="boot-verse">' + charSvg + '</div>'
+          + '<div class="boot-author" style="animation-delay:' + (total + 0.3) + 's">' + v.author + '</div>'
+          + '<div class="boot-seal" style="animation-delay:' + (total + 0.8) + 's">入<br>境</div>';
+        // 写完后 · 时空穿越过渡 · 墨晕扩散 + 模糊淡出
+        // 总等待时长 = 书写(total) + 落款(0.3) + 钤印(0.8) + 停留(0.8) · 存全局供 main.tsx 读取
+        window.__BOOT_END__ = (total + 0.3 + 0.8 + 0.8) * 1000;
+        // 记录开场开始时刻 · main.tsx 按已过时间计算剩余等待
+        window.__BOOT_START__ = Date.now();
+      })();
+    </script>
+    <style>
+      .boot-verse {
+        font-family: 'Ma Shan Zheng', 'Noto Serif SC', serif;
+        font-size: clamp(2.2rem, 8vmin, 5rem);
+        color: rgb(var(--c-daiqing-rgb));
+        letter-spacing: 0.15em;
+        line-height: 1.6;
+        text-shadow: 0 2px 12px rgb(var(--c-daiqing-rgb) / 0.15);
+      }
+      .boot-char {
+        display: inline-block;
+        opacity: 0;
+        filter: blur(8px);
+        animation: boot-write 0.8s ease-out forwards;
+      }
+      @keyframes boot-write {
+        0% { opacity: 0; filter: blur(8px); transform: translateY(6px) scale(0.92); }
+        30% { opacity: 0.4; filter: blur(3px); }
+        100% { opacity: 1; filter: blur(0); transform: translateY(0) scale(1); }
+      }
+      .boot-author {
+        margin-top: 2.5vmin;
+        font-family: 'Noto Serif SC', serif;
+        font-size: clamp(0.8rem, 2.2vmin, 1.1rem);
+        color: rgb(var(--c-qingbi-rgb) / 0.7);
+        letter-spacing: 0.3em;
+        opacity: 0;
+        animation: boot-fade-in 1.2s ease-out forwards;
+      }
+      .boot-seal {
+        margin: 4vmin auto 0;
+        width: clamp(2.4rem, 6vmin, 3.2rem);
+        height: clamp(2.4rem, 6vmin, 3.2rem);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Noto Serif SC', serif;
+        font-size: clamp(0.7rem, 2vmin, 1rem);
+        line-height: 1.2;
+        text-align: center;
+        color: rgb(var(--c-xuanzhi-light-rgb));
+        background: rgb(var(--c-zhusha-rgb));
+        border: 2px solid rgb(var(--c-zhusha-deep-rgb));
+        letter-spacing: 0.1em;
+        opacity: 0;
+        transform: rotate(-4deg) scale(1.4);
+        animation: boot-seal-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        box-shadow: 0 4px 16px rgb(var(--c-zhusha-rgb) / 0.3);
+      }
+      @keyframes boot-seal-in {
+        0% { opacity: 0; transform: rotate(-12deg) scale(2); }
+        60% { opacity: 1; transform: rotate(-2deg) scale(0.95); }
+        100% { opacity: 0.95; transform: rotate(-4deg) scale(1); }
+      }
+      @keyframes boot-fade-in {
+        from { opacity: 0; transform: translateY(6px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes boot-halo {
+        0%, 100% { transform: scale(0.9); opacity: 0.6; }
+        50% { transform: scale(1.1); opacity: 0.9; }
+      }
+      /* 时空穿越 · 写完后整屏墨晕扩散 + 模糊淡出 · 由 main.tsx 触发 */
+      #boot-loading.boot-warp {
+        animation: boot-warp 1.2s ease-in forwards;
+      }
+      @keyframes boot-warp {
+        0% { filter: blur(0); opacity: 1; }
+        40% { filter: blur(2px) brightness(1.1); }
+        100% { filter: blur(20px) brightness(1.3); opacity: 0; transform: scale(1.08); }
+      }
+    </style>
+    <div id="root"></div>
+    <!-- 全局错误捕获：JS 运行时出错时显示在页面上，避免白屏无法排查 -->
+    <script>
+      window.addEventListener('error', function (e) {
+        var el = document.getElementById('boot-loading');
+        if (el) {
+          el.innerHTML = '<div style="text-align:center;padding:32px;max-width:600px;">'
+            + '<h2 style="color:#A4392F;margin:0 0 12px;font-family:serif;">页面加载出错</h2>'
+            + '<pre style="text-align:left;background:#FFF;padding:12px;border:1px solid #A4392F;border-radius:4px;font-size:12px;white-space:pre-wrap;word-break:break-all;">'
+            + (e.message || '未知错误') + (e.filename ? '\n@ ' + e.filename + ':' + e.lineno : '')
+            + '</pre></div>';
+        }
+      });
+      window.addEventListener('unhandledrejection', function (e) {
+        console.error('Unhandled promise rejection:', e.reason);
+      });
+    </script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

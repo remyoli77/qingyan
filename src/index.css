@@ -1,0 +1,289 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   三朝主题 CSS 变量 · 宋/明/秦
+   颜色以 RGB 三元组定义 · 配合 tailwind <alpha-value> 支持透明度
+   ============================================================ */
+
+/* —— 宋朝 · 青绿山水 · 文人雅致 —— */
+.theme-song {
+  --c-qingbi-rgb: 61 107 110;        /* 青碧 */
+  --c-qingbi-deep-rgb: 42 77 80;
+  --c-qingbi-light-rgb: 92 138 141;
+  --c-daiqing-rgb: 26 46 48;         /* 黛青 */
+  --c-daiqing-soft-rgb: 46 69 72;
+  --c-xuanzhi-rgb: 242 235 220;      /* 宣纸 */
+  --c-xuanzhi-deep-rgb: 232 223 201;
+  --c-xuanzhi-light-rgb: 248 243 231;
+  --c-zheshi-rgb: 184 118 62;        /* 赭石 */
+  --c-zheshi-light-rgb: 212 146 88;
+  --c-zhusha-rgb: 164 57 47;         /* 朱砂 */
+  --c-zhusha-deep-rgb: 122 40 32;
+  --c-liujin-rgb: 201 169 97;        /* 鎏金 */
+  --c-liujin-deep-rgb: 156 126 63;
+
+  --c-paper-base: 245 238 220;       /* 纸质底色 · 用于 paper-texture */
+  --c-sky-top: 248 243 231;
+  --c-sky-mid: 232 223 201;
+  --c-sky-bot: 214 201 168;
+
+  --font-brush: "Ma Shan Zheng", "Noto Serif SC", STKaiti, KaiTi, serif;
+  --font-seal: "ZCOOL XiaoWei", "Noto Serif SC", STSong, SimSun, serif;
+  --font-song: "Noto Serif SC", STSong, SimSun, Songti SC, serif;
+}
+
+/* —— 明朝 · 青花瓷韵 · 富丽端庄 —— */
+.theme-ming {
+  --c-qingbi-rgb: 43 74 124;         /* 青花蓝 */
+  --c-qingbi-deep-rgb: 27 52 88;
+  --c-qingbi-light-rgb: 74 107 158;
+  --c-daiqing-rgb: 22 34 58;         /* 墨蓝 */
+  --c-daiqing-soft-rgb: 42 58 85;
+  --c-xuanzhi-rgb: 240 234 214;      /* 线装书白 */
+  --c-xuanzhi-deep-rgb: 229 222 194;
+  --c-xuanzhi-light-rgb: 247 242 224;
+  --c-zheshi-rgb: 199 62 58;         /* 矾红 */
+  --c-zheshi-light-rgb: 216 90 86;
+  --c-zhusha-rgb: 184 51 46;         /* 朱红 */
+  --c-zhusha-deep-rgb: 138 37 32;
+  --c-liujin-rgb: 212 160 23;        /* 帝金 */
+  --c-liujin-deep-rgb: 168 128 16;
+
+  --c-paper-base: 239 233 213;
+  --c-sky-top: 245 240 220;
+  --c-sky-mid: 224 217 192;
+  --c-sky-bot: 200 191 160;
+
+  --font-brush: "Ma Shan Zheng", "Noto Serif SC", STKaiti, KaiTi, serif;
+  --font-seal: "ZCOOL XiaoWei", "Noto Serif SC", STSong, SimSun, serif;
+  --font-song: "Noto Serif SC", STSong, SimSun, Songti SC, serif;
+}
+
+/* —— 秦朝 · 玄墨竹简 · 肃穆古拙 —— */
+.theme-qin {
+  --c-qingbi-rgb: 90 107 79;         /* 青铜绿 */
+  --c-qingbi-deep-rgb: 62 74 53;
+  --c-qingbi-light-rgb: 122 139 111;
+  --c-daiqing-rgb: 26 26 26;         /* 玄黑 */
+  --c-daiqing-soft-rgb: 46 46 46;
+  --c-xuanzhi-rgb: 212 184 150;      /* 竹简黄 */
+  --c-xuanzhi-deep-rgb: 196 165 128;
+  --c-xuanzhi-light-rgb: 224 201 168;
+  --c-zheshi-rgb: 139 115 85;        /* 古铜 */
+  --c-zheshi-light-rgb: 168 139 107;
+  --c-zhusha-rgb: 164 57 47;         /* 朱砂 · 秦人尚朱印 */
+  --c-zhusha-deep-rgb: 122 40 32;
+  --c-liujin-rgb: 139 105 20;        /* 古铜金 */
+  --c-liujin-deep-rgb: 107 80 16;
+
+  --c-paper-base: 212 184 150;
+  --c-sky-top: 208 189 154;
+  --c-sky-mid: 184 165 128;
+  --c-sky-bot: 154 136 104;
+
+  /* 秦尚篆 · 标题用篆印体更显古意 */
+  --font-brush: "ZCOOL XiaoWei", "Noto Serif SC", STKaiti, KaiTi, serif;
+  --font-seal: "ZCOOL XiaoWei", "Noto Serif SC", STSong, SimSun, serif;
+  --font-song: "Noto Serif SC", STSong, SimSun, Songti SC, serif;
+}
+
+/* —— 唐朝 · 金碧辉煌 · 大唐气象 —— */
+.theme-tang {
+  --c-qingbi-rgb: 123 79 158;        /* 紫宸 · 唐代尚紫 */
+  --c-qingbi-deep-rgb: 90 58 122;
+  --c-qingbi-light-rgb: 157 114 196;
+  --c-daiqing-rgb: 42 27 61;         /* 墨紫 */
+  --c-daiqing-soft-rgb: 74 59 93;
+  --c-xuanzhi-rgb: 237 223 196;      /* 帝黄绢 */
+  --c-xuanzhi-deep-rgb: 220 207 168;
+  --c-xuanzhi-light-rgb: 245 235 212;
+  --c-zheshi-rgb: 200 146 58;        /* 赭黄 · 唐三彩琥珀 */
+  --c-zheshi-light-rgb: 212 168 90;
+  --c-zhusha-rgb: 192 57 43;         /* 丹朱 · 鲜亮唐红 */
+  --c-zhusha-deep-rgb: 154 45 32;
+  --c-liujin-rgb: 212 165 42;        /* 煌金 */
+  --c-liujin-deep-rgb: 176 133 16;
+
+  --c-paper-base: 237 223 196;
+  --c-sky-top: 245 235 212;
+  --c-sky-mid: 224 208 168;
+  --c-sky-bot: 200 176 128;
+
+  --font-brush: "Ma Shan Zheng", "Noto Serif SC", STKaiti, KaiTi, serif;
+  --font-seal: "ZCOOL XiaoWei", "Noto Serif SC", STSong, SimSun, serif;
+  --font-song: "Noto Serif SC", STSong, SimSun, Songti SC, serif;
+}
+
+/* 默认根变量 · 防止主题类未加载时的回退 */
+:root {
+  --c-qingbi-rgb: 61 107 110;
+  --c-qingbi-deep-rgb: 42 77 80;
+  --c-qingbi-light-rgb: 92 138 141;
+  --c-daiqing-rgb: 26 46 48;
+  --c-daiqing-soft-rgb: 46 69 72;
+  --c-xuanzhi-rgb: 242 235 220;
+  --c-xuanzhi-deep-rgb: 232 223 201;
+  --c-xuanzhi-light-rgb: 248 243 231;
+  --c-zheshi-rgb: 184 118 62;
+  --c-zheshi-light-rgb: 212 146 88;
+  --c-zhusha-rgb: 164 57 47;
+  --c-zhusha-deep-rgb: 122 40 32;
+  --c-liujin-rgb: 201 169 97;
+  --c-liujin-deep-rgb: 156 126 63;
+  --c-paper-base: 245 238 220;
+  --c-sky-top: 248 243 231;
+  --c-sky-mid: 232 223 201;
+  --c-sky-bot: 214 201 168;
+  --font-brush: "Ma Shan Zheng", "Noto Serif SC", STKaiti, KaiTi, serif;
+  --font-seal: "ZCOOL XiaoWei", "Noto Serif SC", STSong, SimSun, serif;
+  --font-song: "Noto Serif SC", STSong, SimSun, Songti SC, serif;
+
+  font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color-scheme: light;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: rgb(var(--c-xuanzhi-rgb));
+  color: rgb(var(--c-daiqing-rgb));
+  background-image:
+    radial-gradient(circle at 18% 22%, rgb(var(--c-zheshi-rgb) / 0.05) 0%, transparent 38%),
+    radial-gradient(circle at 82% 68%, rgb(var(--c-qingbi-rgb) / 0.05) 0%, transparent 42%),
+    radial-gradient(circle at 50% 90%, rgb(var(--c-zhusha-rgb) / 0.02) 0%, transparent 30%),
+    radial-gradient(circle at 5% 80%, rgb(var(--c-liujin-rgb) / 0.04) 0%, transparent 35%);
+  background-attachment: fixed;
+  transition: background-color 0.6s ease, color 0.6s ease;
+}
+
+/* 自定义滚动条 — 朝代自适应 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: rgb(var(--c-xuanzhi-deep-rgb) / 0.4);
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgb(var(--c-qingbi-light-rgb)) 0%, rgb(var(--c-qingbi-rgb)) 100%);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--c-qingbi-deep-rgb));
+}
+
+/* 文本选中色 */
+::selection {
+  background-color: rgb(var(--c-zhusha-rgb) / 0.18);
+  color: rgb(var(--c-daiqing-rgb));
+}
+
+@layer components {
+  /* 印章基础样式 — 朱砂底，朝代间略有差异 */
+  .seal {
+    font-family: var(--font-seal);
+    background-color: rgb(var(--c-zhusha-rgb));
+    color: rgb(var(--c-xuanzhi-light-rgb));
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgb(var(--c-zhusha-rgb) / 0.25);
+    letter-spacing: 0.1em;
+    line-height: 1;
+    user-select: none;
+    transition: background-color 0.6s ease, color 0.6s ease;
+  }
+
+  /* 卷轴轴头 */
+  .scroll-cap {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 56px;
+    background: linear-gradient(180deg, rgb(var(--c-zheshi-light-rgb)) 0%, rgb(var(--c-zheshi-rgb)) 50%, rgb(var(--c-liujin-deep-rgb)) 100%);
+    border-radius: 4px;
+    box-shadow: 0 2px 6px rgb(var(--c-daiqing-rgb) / 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+  }
+  .scroll-cap::before {
+    content: "";
+    position: absolute;
+    inset: 4px 2px;
+    border-radius: 2px;
+    background: repeating-linear-gradient(
+      90deg,
+      rgb(var(--c-daiqing-rgb) / 0.15) 0px,
+      rgb(var(--c-daiqing-rgb) / 0.15) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+  }
+
+  /* 朱印引用圈点 */
+  .citation-mark::before {
+    content: "、";
+    color: rgb(var(--c-zhusha-rgb));
+    font-weight: 700;
+    margin-right: 2px;
+  }
+
+  /* 纸质感 — 纤维纹理 + 不规则晕染 · 朝代自适应 */
+  .paper-texture {
+    background-color: rgb(var(--c-paper-base));
+    background-image:
+      radial-gradient(circle at 15% 22%, rgb(var(--c-zheshi-rgb) / 0.05) 0%, transparent 42%),
+      radial-gradient(circle at 82% 78%, rgb(var(--c-qingbi-rgb) / 0.04) 0%, transparent 46%),
+      radial-gradient(circle at 50% 50%, rgb(var(--c-liujin-rgb) / 0.03) 0%, transparent 60%),
+      repeating-linear-gradient(92deg, transparent 0px, transparent 2px, rgb(var(--c-zheshi-rgb) / 0.012) 2px, rgb(var(--c-zheshi-rgb) / 0.012) 3px);
+    transition: background-color 0.6s ease;
+  }
+
+  /* 落款线 */
+  .signature-line {
+    background: linear-gradient(90deg, transparent, rgb(var(--c-liujin-rgb)) 20%, rgb(var(--c-liujin-rgb)) 80%, transparent);
+    height: 1px;
+  }
+}
+
+@layer utilities {
+  .text-vertical {
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    letter-spacing: 0.2em;
+  }
+
+  .text-vertical-mixed {
+    writing-mode: vertical-rl;
+    letter-spacing: 0.15em;
+  }
+
+  /* 墨色渐变文字 — 朝代自适应 */
+  .text-ink-gradient {
+    background: linear-gradient(135deg, rgb(var(--c-daiqing-rgb)) 0%, rgb(var(--c-daiqing-soft-rgb)) 50%, rgb(var(--c-qingbi-rgb)) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .text-gold-gradient {
+    background: linear-gradient(135deg, rgb(var(--c-liujin-rgb)) 0%, rgb(var(--c-liujin-deep-rgb)) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
