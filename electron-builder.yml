@@ -26,7 +26,7 @@ mac:
       arch:
         - x64
         - arm64
-  darkModeSupported: true
+  darkModeSupport: true
   hardenedRuntime: true
   # 未提供开发者证书时 · CI 会跳过签名与公证 · 用户首次打开需手动允许
   gatekeeperAssess: false
