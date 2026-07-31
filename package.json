@@ -14,11 +14,11 @@
     "preview": "vite preview",
     "check": "tsc -b --noEmit",
     "pack:dir": "npm run build && electron-builder --dir",
-    "dist:win": "npm run build && electron-builder --win",
-    "dist:mac": "npm run build && electron-builder --mac",
-    "dist:linux": "npm run build && electron-builder --linux",
-    "dist:all": "npm run build && electron-builder -mwl",
-    "release": "npm run build && electron-builder --publish always"
+    "dist:win": "npm run build && electron-builder --win --publish never",
+    "dist:mac": "npm run build && electron-builder --mac --publish never",
+    "dist:linux": "npm run build && electron-builder --linux --publish never",
+    "dist:all": "npm run build && electron-builder -mwl --publish never",
+    "release": "npm run build && electron-builder --publish never"
   },
   "dependencies": {
     "clsx": "^2.1.1",

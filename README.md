@@ -114,10 +114,10 @@ Electron 打包，支持 Windows / macOS（Intel + Apple Silicon）/ Linux 三�
 
 | 平台 | 文件 | 说明 |
 |------|------|------|
-| Windows | `青砚-1.0.0-win-x64.exe` | NSIS 安装程序 |
-| macOS (Apple Silicon) | `青砚-1.0.0-mac-arm64.dmg` | M1/M2/M3 |
-| macOS (Intel) | `青砚-1.0.0-mac-x64.dmg` | Intel Mac |
-| Linux | `青砚-1.0.0.AppImage` | 免安装直接运行 |
+| Windows | `QingYan-1.0.0-win-x64.exe` | NSIS 安装程序 |
+| macOS (Apple Silicon) | `QingYan-1.0.0-mac-arm64.dmg` | M1/M2/M3 |
+| macOS (Intel) | `QingYan-1.0.0-mac-x64.dmg` | Intel Mac |
+| Linux | `QingYan-1.0.0-linux-x64.AppImage` | 免安装直接运行 |
 
 > **macOS 提示**：因未提供 Apple 开发者签名，首次打开可能提示"无法验证开发者"。右键点击应用 → 打开 → 仍要打开，即可正常使用。
 

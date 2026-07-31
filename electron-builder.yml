@@ -2,8 +2,8 @@
 # Win: NSIS .exe · Mac: DMG + zip (Intel + Apple Silicon) · Linux: AppImage + deb
 appId: ink.qingyan.app
 productName: 青砚
-copyright: Copyright © 2025 青砚 QingYan
-artifactName: ${productName}-${version}-${os}-${arch}.${ext}
+# 安装包文件名用 ASCII · 规避 GitHub 上传时中文路径转义问题 · 应用内显示名仍为 productName(青砚)
+artifactName: QingYan-${version}-${os}-${arch}.${ext}
 
 directories:
   output: release
@@ -32,7 +32,7 @@ mac:
   gatekeeperAssess: false
 
 dmg:
-  artifactName: ${productName}-${version}-mac-${arch}.dmg
+  artifactName: QingYan-${version}-mac-${arch}.dmg
   contents:
     - x: 130
       y: 220
@@ -52,7 +52,7 @@ nsis:
   oneClick: false
   perMachine: false
   allowToChangeInstallationDirectory: true
-  artifactName: ${productName}-${version}-win-${arch}.exe
+  artifactName: QingYan-${version}-win-${arch}.exe
   shortcutName: 青砚
 
 linux:
