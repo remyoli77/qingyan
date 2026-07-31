@@ -54,7 +54,7 @@ export default function Chat({ onOpenSettings }: { onOpenSettings?: () => void }
     const mode = feature ? "topic" : "compatible";
     const topic = feature?.id as KBTopic | undefined;
     initConversation(initial, mode, topic);
-  }, [params.topic, initialQueryFromState, initConversation]);
+  }, [params.topic, initialQueryFromState, initConversation, meta.id]);
 
   // 消息变化时自动滚到底
   useLayoutEffect(() => {

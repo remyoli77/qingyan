@@ -106,7 +106,7 @@ export const mockMemory: MemoryEntry[] = [
 ];
 
 // 预设欢迎语 · 按朝代品牌名生成
-export function createWelcomeMessage(brand: string, signoff: string): Message {
+export function createWelcomeMessage(brand: string): Message {
   return {
     id: "welcome",
     role: "agent",

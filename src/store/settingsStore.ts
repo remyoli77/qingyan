@@ -149,12 +149,12 @@ export const useSettingsStore = create<SettingsState>()(
     {
       name: "qingyan-settings",
       version: 2,
-      migrate: (persisted: any, version: number) => {
+      migrate: (persisted: Record<string, unknown> | undefined, version: number) => {
         // v1 → v2: agentApiConfigs 由 {key, base} 改为 {key, baseUrl, model}，并补 custom
         if (version < 2 && persisted && persisted.agentApiConfigs) {
           const fresh = buildApiConfigs();
           (Object.keys(fresh) as AgentModel[]).forEach((k) => {
-            const old = persisted.agentApiConfigs[k];
+            const old = (persisted.agentApiConfigs as Record<string, { key?: string; base?: string; baseUrl?: string; model?: string }>)[k];
             if (old) {
               fresh[k] = {
                 key: old.key ?? "",
@@ -163,7 +163,7 @@ export const useSettingsStore = create<SettingsState>()(
               };
             }
           });
-          persisted.agentApiConfigs = fresh;
+          (persisted as Record<string, unknown>).agentApiConfigs = fresh;
         }
         return persisted;
       },

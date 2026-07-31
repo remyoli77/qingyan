@@ -24,7 +24,7 @@ export interface RagResult {
 }
 
 // 从大模型回复中蒸馏出有用的知识正文 · 用于补齐
-function distillAnswer(query: string, raw: string): string {
+function distillAnswer(raw: string): string {
   // 去除明显的前后缀寒暄与落款 · 取核心段落
   let t = raw.trim();
   // 去落款
@@ -90,7 +90,7 @@ async function topicRag(ctx: RagContext): Promise<RagResult> {
   }
 
   // 3. 蒸馏有用信息 · 补齐到主题知识库
-  const distilled = distillAnswer(query, result.text);
+  const distilled = distillAnswer(result.text);
   if (distilled.length > 20) {
     await addToKB(topic, query, distilled, "llm");
     // 补齐后即对该主题做一次蒸馏去重

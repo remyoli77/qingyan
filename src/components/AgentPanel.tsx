@@ -50,7 +50,7 @@ export default function AgentPanel({ open, onBack }: AgentPanelProps) {
     const timer = setTimeout(() => ctrl.abort(), 8000);
 
     let url = "";
-    let init: RequestInit = { method: "GET", mode: "cors", signal: ctrl.signal };
+    const init: RequestInit = { method: "GET", mode: "cors", signal: ctrl.signal };
 
     try {
       if (style === "openai") {
@@ -88,9 +88,9 @@ export default function AgentPanel({ open, onBack }: AgentPanelProps) {
       } else {
         setCheckStatus("fail"); setCheckMsg(`灵台未通 · 答曰 ${res.status}`);
       }
-    } catch (err: any) {
+    } catch (err) {
       clearTimeout(timer);
-      if (err?.name === "AbortError") {
+      if (err instanceof Error && err.name === "AbortError") {
         setCheckStatus("fail"); setCheckMsg("灵台久候不至 · 超时");
       } else {
         // TypeError · 多为 CORS 拦截或网络不可达

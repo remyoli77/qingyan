@@ -1,7 +1,6 @@
 // 研思录 · 思考链抽屉 — 从对话区右侧滑入，收纳任务节点/工具调用/RAG来源
 import { useEffect } from "react";
 import type { ThinkingTrace, TaskStatus } from "@/types";
-import { useSettingsStore } from "@/store/settingsStore";
 import { useDynastyMeta } from "@/store/themeStore";
 
 interface TraceDrawerProps {
@@ -72,7 +71,6 @@ function TraceIcon({ kind }: { kind: ThinkingTrace["kind"] }) {
 }
 
 export default function TraceDrawer({ open, onClose, traces, isThinking }: TraceDrawerProps) {
-  const s = useSettingsStore();
   const meta = useDynastyMeta();
 
   // ESC 关闭

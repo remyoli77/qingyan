@@ -12,7 +12,7 @@ import { ambience } from "@/lib/ambience";
 function currentWelcome(): Message {
   const dynasty = useThemeStore.getState().dynasty;
   const meta = DYNASTIES[dynasty];
-  return createWelcomeMessage(meta.brand, meta.signoff);
+  return createWelcomeMessage(meta.brand);
 }
 
 interface ChatState {
@@ -243,7 +243,6 @@ async function runAgentPipeline(
   let thinkBuf = "";          // 累积原始流 · 用于跨 chunk 的标签匹配
   let inThink = false;        // 是否处于 <think>...</think> 内
   let thinkingAcc = "";       // 累积思考内容
-  let contentAcc = "";        // 累积正文内容
 
   // 增量解析 · 返回 { thinkDelta, contentDelta }
   function parseThinkDelta(delta: string): { thinkDelta: string; contentDelta: string } {

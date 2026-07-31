@@ -11,8 +11,9 @@ import './index.css'
 // 开场结束 -> markReady() 广播就绪 · 各页面入场动画据此触发 · 不再耦合 DOM 探测
 const boot = document.getElementById('boot-loading')
 if (boot) {
-  const totalMs = (window as any).__BOOT_END__ as number || 5000
-  const startMs = (window as any).__BOOT_START__ as number || Date.now()
+  const bootWindow = window as unknown as { __BOOT_END__?: number; __BOOT_START__?: number }
+  const totalMs = bootWindow.__BOOT_END__ || 5000
+  const startMs = bootWindow.__BOOT_START__ || Date.now()
   const elapsed = Date.now() - startMs
   const wait = Math.max(0, totalMs - elapsed)
   // 先让 React 渲染到 DOM（但被 boot 遮挡）· 待书写完成后触发穿越

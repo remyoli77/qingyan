@@ -201,31 +201,42 @@ export async function chatWithLLM(
     const j = await res.json();
     const text = extractFull(j, style);
     return { text, ok: true };
-  } catch (err: any) {
+  } catch (err) {
     clearTimeout(timer);
-    if (err?.name === "AbortError") return { text: "", ok: false, error: "灵台久候不至 · 超时" };
+    if (err instanceof Error && err.name === "AbortError") return { text: "", ok: false, error: "灵台久候不至 · 超时" };
     return { text: "", ok: false, error: "灵台未通 · 跨域阻隔恐需代理" };
   }
 }
 
-function extractDelta(j: any, style: string): string {
+// 各家 API 响应结构各异 · 此处用宽松索引签名读取 · 已知字段
+type ApiResponse = Record<string, unknown>;
+
+function extractDelta(j: ApiResponse, style: string): string {
   if (style === "anthropic") {
-    if (j?.type === "content_block_delta" && j?.delta?.text) return j.delta.text;
+    if (j?.type === "content_block_delta") {
+      const delta = j.delta as { text?: string } | undefined;
+      return delta?.text ?? "";
+    }
     return "";
   }
   if (style === "gemini") {
-    return j?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+    const candidates = j.candidates as Array<{ content?: { parts?: Array<{ text?: string }> } }> | undefined;
+    return candidates?.[0]?.content?.parts?.[0]?.text ?? "";
   }
   // openai
-  return j?.choices?.[0]?.delta?.content ?? "";
+  const choices = j.choices as Array<{ delta?: { content?: string } }> | undefined;
+  return choices?.[0]?.delta?.content ?? "";
 }
 
-function extractFull(j: any, style: string): string {
+function extractFull(j: ApiResponse, style: string): string {
   if (style === "anthropic") {
-    return (j?.content ?? []).map((c: any) => c?.text ?? "").join("");
+    const content = (j.content as Array<{ text?: string }> | undefined) ?? [];
+    return content.map((c) => c?.text ?? "").join("");
   }
   if (style === "gemini") {
-    return j?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+    const candidates = j.candidates as Array<{ content?: { parts?: Array<{ text?: string }> } }> | undefined;
+    return candidates?.[0]?.content?.parts?.[0]?.text ?? "";
   }
-  return j?.choices?.[0]?.message?.content ?? "";
+  const choices = j.choices as Array<{ message?: { content?: string } }> | undefined;
+  return choices?.[0]?.message?.content ?? "";
 }

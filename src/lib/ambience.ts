@@ -24,7 +24,7 @@ class Ambience {
   /** 懒创建 AudioContext + 主增益 + 噪声缓冲 · 首次用户手势后调用 */
   private ensure() {
     if (this.ctx) return;
-    const Ctor = window.AudioContext || (window as any).webkitAudioContext;
+    const Ctor = window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
     if (!Ctor) return;
     this.ctx = new Ctor();
     this.master = this.ctx.createGain();
@@ -57,7 +57,9 @@ class Ambience {
     this.muted = m;
     try {
       localStorage.setItem(MUTE_KEY, m ? "1" : "0");
-    } catch {}
+    } catch {
+      /* 隐私模式或配额已满 · 忽略 */
+    }
     if (this.master && this.ctx) {
       this.master.gain.setTargetAtTime(m ? 0 : 0.42, this.ctx.currentTime, 0.08);
     }
@@ -156,7 +158,6 @@ class Ambience {
     this.resume();
     if (!this.ctx) return;
     this.stopThinking();
-    const ctx = this.ctx;
     const schedule = () => {
       if (!this.ctx) return;
       const t = this.ctx.currentTime;
