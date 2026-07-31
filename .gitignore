@@ -27,3 +27,6 @@ qingyan-project.tar.gz
 *.njsproj
 *.sln
 *.sw?
+
+# TRAE IDE 工作区目录
+.trae/

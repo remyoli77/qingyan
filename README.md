@@ -6,8 +6,8 @@
 
 ### 国风 AI Agent · 四朝雅伴 · 墨韵为骨
 
-[![CI](https://github.com/qingyan/qingyan/actions/workflows/ci.yml/badge.svg)](./.github/workflows/ci.yml)
-[![Release](https://github.com/qingyan/qingyan/actions/workflows/release.yml/badge.svg)](./.github/workflows/release.yml)
+[![CI](https://github.com/remyoli39-qiqi/qingyan/actions/workflows/ci.yml/badge.svg)](./.github/workflows/ci.yml)
+[![Release](https://github.com/remyoli39-qiqi/qingyan/actions/workflows/release.yml/badge.svg)](./.github/workflows/release.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-daiqing.svg)](./LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Win%20%7C%20macOS%20%7C%20Linux%20%7C%20Web-zheshi.svg)](#下载安装)
 [![Version](https://img.shields.io/badge/Version-1.0.0-qingbi.svg)](./CHANGELOG.md)
@@ -137,7 +137,7 @@ Electron 打包，支持 Windows / macOS（Intel + Apple Silicon）/ Linux 三�
 ### Web 开发模式
 
 ```bash
-git clone https://github.com/<your-fork>/qingyan.git
+git clone https://github.com/remyoli39-qiqi/qingyan.git
 cd qingyan
 npm install
 npm run dev
@@ -227,7 +227,7 @@ qingyan/
 - [ ] 更多朝代（汉/魏晋/清）
 - [ ] 语音朗读（朝代声线）
 
-详见 [ROADMAP](https://github.com/qingyan/qingyan/discussions) 与 Discussions 区。
+详见 [ROADMAP](https://github.com/remyoli39-qiqi/qingyan/discussions) 与 Discussions 区。
 
 ## 许可证
 
