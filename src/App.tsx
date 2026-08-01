@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { HashRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Home from "@/pages/Home";
 import Chat from "@/pages/Chat";
@@ -47,9 +47,9 @@ export default function App() {
     applyDynastyClass(dynasty);
   }, [dynasty]);
 
-  // basename 取 Vite 的 base · GitHub Pages 子路径部署时自动适配 · Electron/Web 根路径时为 "/"
+  // HashRouter · hash 路由不依赖 history API · Electron file:// 协议下可正常跳转 · 兼容 GitHub Pages
   return (
-    <Router basename={import.meta.env.BASE_URL}>
+    <Router>
       <PageRoutes onOpenSettings={() => setSettingsOpen(true)} />
       <SettingsDrawer open={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </Router>
