@@ -125,7 +125,7 @@ export default function SettingsDrawer({ open, onClose }: SettingsDrawerProps) {
                   <div className="font-song text-[10px] text-qingbi/55 mt-0.5 tracking-wider">
                     {agentToneMeta[s.agentTone].name}其辞 · {agentPersonaMeta[s.agentPersona].desc.split(" · ")[0]}
                   </div>
-                  <div className="font-song text-[10px] text-qingbi/45 mt-1 tracking-wider flex items-center gap-1">
+                  <div className="font-song text-[10px] text-qingbi/65 mt-1 tracking-wider flex items-center gap-1">
                     {(() => {
                       const b = modelBadge(s.agentModel);
                       return (
@@ -360,7 +360,7 @@ function Section({
     <section>
       <div className="flex items-baseline gap-2 mb-2.5">
         <span className="font-song text-sm text-daiqing tracking-wider">{title}</span>
-        <span className="font-song text-[9px] text-qingbi/40 tracking-widest">{hint}</span>
+        <span className="font-song text-[9px] text-qingbi/60 tracking-widest">{hint}</span>
         <span className="flex-1 h-px bg-qingbi/12 ml-1" />
       </div>
       {children}

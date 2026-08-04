@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /* ============================================================
-   三朝主题 CSS 变量 · 宋/明/秦
+   四朝主题 CSS 变量 · 宋/明/秦/唐
    颜色以 RGB 三元组定义 · 配合 tailwind <alpha-value> 支持透明度
    ============================================================ */
 
@@ -28,6 +28,9 @@
   --c-sky-top: 248 243 231;
   --c-sky-mid: 232 223 201;
   --c-sky-bot: 214 201 168;
+
+  /* 宋代暗纹 · 冰裂纹 · 哥窑开片 · 黛青极淡 */
+  --dynasty-motif: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'><g fill='none' stroke='%231a2e30' stroke-width='0.6' opacity='0.04'><path d='M0,20 L30,15 L60,25 L90,18 L120,22 M0,50 L40,45 L70,55 L100,48 L120,52 M0,80 L35,75 L65,82 L95,78 L120,80 M20,0 L18,30 L25,60 L22,90 L20,120 M50,0 L48,30 L55,60 L52,90 L50,120 M80,0 L82,30 L78,60 L80,90 L82,120 M15,15 L45,35 L75,15 L105,35 M15,75 L45,55 L75,75 L105,55 M30,90 L60,70 L90,90 M30,30 L60,50 L90,30'/></g></svg>");
 
   --font-brush: "Ma Shan Zheng", "Noto Serif SC", STKaiti, KaiTi, serif;
   --font-seal: "ZCOOL XiaoWei", "Noto Serif SC", STSong, SimSun, serif;
@@ -56,6 +59,9 @@
   --c-sky-mid: 224 217 192;
   --c-sky-bot: 200 191 160;
 
+  /* 明代暗纹 · 缠枝莲 · 青花纹样 · 青花蓝极淡 */
+  --dynasty-motif: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><g fill='none' stroke='%232b3458' stroke-width='0.7' opacity='0.05'><path d='M50,10 Q60,25 50,40 Q40,55 50,70 Q60,85 50,90 M10,50 Q25,40 40,50 Q55,60 70,50 Q85,40 90,50 M20,20 Q35,30 30,45 M80,80 Q65,70 70,55 M20,80 Q35,70 30,55 M80,20 Q65,30 70,45'/><circle cx='50' cy='50' r='6' opacity='0.6'/><circle cx='50' cy='50' r='3' opacity='0.4'/></g></svg>");
+
   --font-brush: "Ma Shan Zheng", "Noto Serif SC", STKaiti, KaiTi, serif;
   --font-seal: "ZCOOL XiaoWei", "Noto Serif SC", STSong, SimSun, serif;
   --font-song: "Noto Serif SC", STSong, SimSun, Songti SC, serif;
@@ -82,6 +88,9 @@
   --c-sky-top: 208 189 154;
   --c-sky-mid: 184 165 128;
   --c-sky-bot: 154 136 104;
+
+  /* 秦代暗纹 · 云纹瓦当 · 同心卷云 · 玄黑极淡 */
+  --dynasty-motif: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><g fill='none' stroke='%231a1a1a' stroke-width='0.8' opacity='0.05'><circle cx='50' cy='50' r='45'/><circle cx='50' cy='50' r='32'/><path d='M50,18 Q62,18 70,28 Q78,40 70,52 Q60,60 50,52 Q42,42 50,32 M50,82 Q38,82 30,72 Q22,60 30,48 Q40,40 50,48 Q58,58 50,68 M82,50 Q82,62 72,70 Q60,78 48,70 Q40,60 48,50 Q58,42 68,50 M18,50 Q18,38 28,30 Q40,22 52,30 Q60,40 52,50 Q42,58 32,50'/></g></svg>");
 
   /* 秦尚篆 · 标题用篆印体更显古意 */
   --font-brush: "ZCOOL XiaoWei", "Noto Serif SC", STKaiti, KaiTi, serif;
@@ -110,6 +119,9 @@
   --c-sky-top: 245 235 212;
   --c-sky-mid: 224 208 168;
   --c-sky-bot: 200 176 128;
+
+  /* 唐代暗纹 · 宝相花 · 团花卷草 · 墨紫极淡 */
+  --dynasty-motif: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><g fill='none' stroke='%232a1b3d' stroke-width='0.7' opacity='0.05'><circle cx='50' cy='50' r='40'/><circle cx='50' cy='50' r='15'/><path d='M50,10 L50,20 M90,50 L80,50 M50,90 L50,80 M10,50 L20,50 M29,29 L35,35 M71,29 L65,35 M71,71 L65,65 M29,71 L35,65'/><path d='M35,35 Q50,25 65,35 Q75,50 65,65 Q50,75 35,65 Q25,50 35,35'/><path d='M42,42 Q50,35 58,42 Q65,50 58,58 Q50,65 42,58 Q35,50 42,42'/></g></svg>");
 
   --font-brush: "Ma Shan Zheng", "Noto Serif SC", STKaiti, KaiTi, serif;
   --font-seal: "ZCOOL XiaoWei", "Noto Serif SC", STSong, SimSun, serif;
@@ -165,7 +177,9 @@ body {
     radial-gradient(circle at 18% 22%, rgb(var(--c-zheshi-rgb) / 0.05) 0%, transparent 38%),
     radial-gradient(circle at 82% 68%, rgb(var(--c-qingbi-rgb) / 0.05) 0%, transparent 42%),
     radial-gradient(circle at 50% 90%, rgb(var(--c-zhusha-rgb) / 0.02) 0%, transparent 30%),
-    radial-gradient(circle at 5% 80%, rgb(var(--c-liujin-rgb) / 0.04) 0%, transparent 35%);
+    radial-gradient(circle at 5% 80%, rgb(var(--c-liujin-rgb) / 0.04) 0%, transparent 35%),
+    /* 朝代暗纹 · 由 --dynasty-motif 变量提供 · 极低 opacity 不喧宾夺主 */
+    var(--dynasty-motif, none);
   background-attachment: fixed;
   transition: background-color 0.6s ease, color 0.6s ease;
 }
@@ -207,6 +221,15 @@ body {
     line-height: 1;
     user-select: none;
     transition: background-color 0.6s ease, color 0.6s ease;
+  }
+
+  /* 钤印动画 · 按下-轻颤-落定 · 模拟真实盖印
+     保留外层 transform: rotate(角度) 由 inline style 控制 · 此处只动 scale 与阴影 */
+  @keyframes seal-stamp {
+    0% { opacity: 0; filter: blur(2px); }
+    50% { opacity: 1; filter: blur(0); box-shadow: 0 0 0 6px rgb(var(--c-zhusha-rgb) / 0.25), 0 4px 12px rgb(var(--c-zhusha-rgb) / 0.4); }
+    70% { box-shadow: 0 0 0 3px rgb(var(--c-zhusha-rgb) / 0.15), 0 3px 8px rgb(var(--c-zhusha-rgb) / 0.3); }
+    100% { opacity: 1; filter: blur(0); box-shadow: 0 2px 4px rgb(var(--c-zhusha-rgb) / 0.3), inset 0 0 0 1px rgb(var(--c-xuanzhi-light-rgb) / 0.4); }
   }
 
   /* 卷轴轴头 */
@@ -286,4 +309,56 @@ body {
     background-clip: text;
     -webkit-text-fill-color: transparent;
   }
+}
+
+/* ============================================================
+   无障碍 · 尊重 prefers-reduced-motion
+   前庭敏感用户关闭动效 · 仅保留透明度终态 · 移除位移/缩放/模糊
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  /* 墨染过渡层 · 直接终态 · 不做晕开 */
+  #dynasty-veil {
+    transition: opacity 0.01ms !important;
+  }
+  /* 开场逐字书写 · 直接呈现 · 不做模糊勾勒 */
+  .boot-char,
+  .boot-author,
+  .boot-seal {
+    animation: none !important;
+    opacity: 1 !important;
+    filter: none !important;
+    transform: none !important;
+  }
+  /* 卷轴展开 · 直接展开态 */
+  #boot-loading {
+    animation: none !important;
+  }
+}
+
+/* ============================================================
+   无障碍 · 键盘焦点可见性
+   :focus-visible 全局朱砂描边 · 鼠标点击不显示 · 键盘 Tab 才显示
+   ============================================================ */
+:focus-visible {
+  outline: 2px solid rgb(var(--c-zhusha-rgb));
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+/* 部分元素自身已有边框 · 描边 offset 加大避免与边框重叠 */
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible,
+[role="radio"]:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+summary:focus-visible {
+  outline-offset: 3px;
 }

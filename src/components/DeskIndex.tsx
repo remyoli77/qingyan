@@ -146,7 +146,7 @@ export default function DeskIndex({ indexEntries, currentTopic, plan }: DeskInde
                       {topic.icon}
                     </span>
                     <span className="font-song text-xs text-daiqing tracking-widest">{topic.label}</span>
-                    <span className="font-song text-[10px] text-qingbi/45">· {topic.hint}</span>
+                    <span className="font-song text-[10px] text-qingbi/65">· {topic.hint}</span>
                     {isCurrent && (
                       <span className="font-song text-[9px] text-zheshi tracking-widest">· 本室</span>
                     )}
@@ -194,13 +194,13 @@ export default function DeskIndex({ indexEntries, currentTopic, plan }: DeskInde
                                   </div>
                                 ))}
                                 {item.citations.length > 2 && (
-                                  <div className="font-song text-[10px] text-qingbi/45 ml-2">
+                                  <div className="font-song text-[10px] text-qingbi/65 ml-2">
                                     另引 {item.citations.length - 2} 条…
                                   </div>
                                 )}
                               </div>
                             ) : (
-                              <div className="mt-1 font-song text-[10px] text-qingbi/45 italic">
+                              <div className="mt-1 font-song text-[10px] text-qingbi/65 italic">
                                 · 灵台运思 · 无典据
                               </div>
                             )}

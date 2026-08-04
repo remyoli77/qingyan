@@ -4,9 +4,11 @@ import { pickReply, mockMemory, createWelcomeMessage } from "@/data/mockChat";
 import { getTaskTemplate } from "@/data/features";
 import { brushSpeedDelay, useSettingsStore } from "@/store/settingsStore";
 import { runRag, scheduleIdleDistill, cancelIdleDistill, type ChatMode } from "@/lib/rag";
-import type { KBTopic } from "@/lib/knowledgeBase";
+import { confirmToKB, type KBTopic } from "@/lib/knowledgeBase";
+import { isHuaxiaRelated, matchedHuaxiaTags } from "@/lib/huaxiaFilter";
 import { DYNASTIES, useThemeStore } from "@/store/themeStore";
 import { ambience } from "@/lib/ambience";
+import { useExternalStore } from "@/store/externalStore";
 
 // 取当前朝代的欢迎消息 · 初始化 / 重置时调用
 function currentWelcome(): Message {
@@ -33,6 +35,7 @@ interface ChatState {
   setTaskStatus: (nodeId: string, status: TaskStatus) => void;
   addTrace: (kind: TraceKind, title: string, detail: string, status?: TaskStatus) => void;
   markTracesRead: () => void;
+  archiveMessage: (messageId: string) => void;  // 收入典籍 · compatible 模式用户确认入库
 }
 
 let msgSeq = 0;
@@ -80,6 +83,31 @@ export const useChatStore = create<ChatState>((set, get) => ({
     const trimmed = text.trim();
     if (!trimmed) return;
 
+    // 外接库关联指令识别 · 不走 RAG · 直接触发关联流程
+    // 关键词：「关联 obsidian」「关联外接库」「扫描我的知识库」「连接 vault」等
+    if (isExternalConnectIntent(trimmed)) {
+      const userHint: Message = {
+        id: nextId(),
+        role: "user",
+        content: trimmed,
+        timestamp: Date.now(),
+      };
+      const agentMsg: Message = {
+        id: nextId(),
+        role: "agent",
+        content:
+          "公子欲关联外接知识库，小童这就为您开启选目录流程。请于弹出的对话框中指定您的 Obsidian vault 或 Markdown 文件夹，小童将自动扫描其中典籍并载入典籍阁。",
+        timestamp: Date.now(),
+        triggerConnect: true,
+      };
+      set((s) => ({
+        messages: [...s.messages, userHint, agentMsg],
+        isThinking: false,
+      }));
+      ambience.brushSend();
+      return;
+    }
+
     const userMsg: Message = {
       id: nextId(),
       role: "user",
@@ -115,6 +143,30 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
   markTracesRead: () => set({ hasNewTrace: false }),
 
+  archiveMessage: (messageId) => {
+    const state = get();
+    const msg = state.messages.find((m) => m.id === messageId);
+    if (!msg || msg.role !== "agent" || msg.archived || !msg.canArchive) return;
+    // 取上一条 user 消息作为问题原文
+    const idx = state.messages.findIndex((m) => m.id === messageId);
+    let question = "";
+    for (let i = idx - 1; i >= 0; i--) {
+      if (state.messages[i].role === "user") { question = state.messages[i].content; break; }
+    }
+    if (!question || !msg.content) return;
+    const topic = inferTopic(question);
+    const tags = matchedHuaxiaTags(question);
+    // 1. 入 user 库（IndexedDB）· 本地累计
+    void confirmToKB(topic, question, msg.content, tags);
+    // 2. 若外接库已关联且开启写入同步 · 同步写 md 到 vault
+    void useExternalStore.getState().writeToVault(question, msg.content, topic, tags);
+    set((s) => ({
+      messages: s.messages.map((m) =>
+        m.id === messageId ? { ...m, archived: true, canArchive: false } : m,
+      ),
+    }));
+  },
+
   setTaskStatus: (nodeId, status) => {
     set((s) => {
       if (!s.taskPlan) return {};
@@ -141,6 +193,21 @@ function inferTemplate(query: string): string {
 function inferTopic(query: string): KBTopic {
   const t = inferTemplate(query);
   return (t === "default" ? "wendao" : t) as KBTopic;
+}
+
+// 外接库关联指令识别 · 匹配用户意图关联 Obsidian / 知识库 / vault
+// 命中即不走 RAG · 直接返回引导回复并触发选目录流程
+const CONNECT_PATTERNS = [
+  /关联.{0,4}(obsidian|外接库|外部库|知识库|vault)/i,
+  /连接.{0,4}(obsidian|外接库|外部库|知识库|vault)/i,
+  /扫描.{0,4}(我的)?(知识库|笔记|vault|obsidian)/i,
+  /导入.{0,4}(obsidian|我的)?(笔记|vault|知识库)/i,
+  /绑定.{0,4}(obsidian|外接库|外部库|知识库|vault)/i,
+  /外接.{0,2}库/,
+  /(obsidian|vault)/i,
+];
+function isExternalConnectIntent(query: string): boolean {
+  return CONNECT_PATTERNS.some((re) => re.test(query));
 }
 
 // 剥离 <think>...</think> 标签 · 返回正文与思考内容
@@ -337,21 +404,7 @@ async function runAgentPipeline(
       } else if (result.source === "llm") {
         addTrace("llm", "灵台运思", mode === "topic" ? `典籍未载 · 问于灵台 · 已蒸馏补齐${topic ? `·${topic}` : ""}` : "典籍未载 · 问于灵台");
       }
-      // 主题模式命中知识库 · 在文末附典据标注
-      if (mode === "topic" && result.kbHits && result.kbHits.length > 0) {
-        const citeLabel = `\n\n〔典据：${result.kbHits.map((h) => h.question).join(" · ")}〕`;
-        finalText += citeLabel;
-        if (!streamed) {
-          // 非流式 · 后续按字补写时带上
-        } else {
-          // 流式已写完正文 · 直接追加标注
-          set((s) => ({
-            messages: s.messages.map((m) =>
-              m.id === agentId ? { ...m, content: m.content + citeLabel } : m,
-            ),
-          }));
-        }
-      }
+      // 典据不再塞入正文 · 统一由下方「典籍所出」卡片展示 · 避免 topic 模式重复标注
       // 写入案头索引 · 按问题归属主题归目
       const inferredTopic: KBTopic = topic ?? inferTopic(query);
       const citations = (result.kbHits ?? []).map((h) => ({
@@ -378,6 +431,15 @@ async function runAgentPipeline(
           },
         ],
       }));
+      // compatible 模式 · 未命中库但属华夏相关 · 标记可入库 · 待用户确认收入典籍阁
+      // topic 模式已有自动蒸馏补库 · 不重复标记
+      if (mode === "compatible" && citations.length === 0 && isHuaxiaRelated(query)) {
+        set((s) => ({
+          messages: s.messages.map((m) =>
+            m.id === agentId ? { ...m, canArchive: true } : m,
+          ),
+        }));
+      }
     } else if (!result.ok) {
       finalText = `〔灵台未通：${result.error}〕\n\n${pack.content}`;
       addTrace("llm", "灵台未通", result.error ?? "调用异常");

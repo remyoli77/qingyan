@@ -6,6 +6,7 @@ import SettingsDrawer from "@/components/SettingsDrawer";
 import { ensureKBSeeded } from "@/lib/kbInit";
 import { useThemeStore, applyDynastyClass } from "@/store/themeStore";
 import { ambience } from "@/lib/ambience";
+import { validateVaultOnBoot } from "@/store/externalStore";
 
 /**
  * 路由出口 · 以顶层路由为 key 包裹
@@ -30,9 +31,10 @@ export default function App() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const dynasty = useThemeStore((s) => s.dynasty);
 
-  // 首屏灌入华夏知识库种子
+  // 首屏灌入华夏知识库种子 + 校验外接库配置有效性（路径失效则清空）
   useEffect(() => {
     void ensureKBSeeded();
+    void validateVaultOnBoot();
   }, []);
 
   // 首次用户手势唤醒 AudioContext · 规避浏览器自动播放策略 · 一次即够

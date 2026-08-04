@@ -82,12 +82,24 @@
         stage.innerHTML =
           '<div class="boot-verse">' + charSvg + '</div>'
           + '<div class="boot-author" style="animation-delay:' + (total + 0.3) + 's">' + v.author + '</div>'
-          + '<div class="boot-seal" style="animation-delay:' + (total + 0.8) + 's">入<br>境</div>';
+          + '<button type="button" class="boot-seal" id="boot-skip" style="animation-delay:' + (total + 0.8) + 's" aria-label="入境 · 跳过开场">入<br>境</button>';
         // 写完后 · 时空穿越过渡 · 墨晕扩散 + 模糊淡出
         // 总等待时长 = 书写(total) + 落款(0.3) + 钤印(0.8) + 停留(0.8) · 存全局供 main.tsx 读取
         window.__BOOT_END__ = (total + 0.3 + 0.8 + 0.8) * 1000;
         // 记录开场开始时刻 · main.tsx 按已过时间计算剩余等待
         window.__BOOT_START__ = Date.now();
+        // 跳过入口 · 点「入境」印章立即触发穿越 · 语义契合（钤印即入境）
+        // 设 flag · main.tsx 启动时若已跳过则 wait=0 直接进入移除流程
+        window.__BOOT_SKIPPED__ = false;
+        var skipBtn = document.getElementById('boot-skip');
+        if (skipBtn) {
+          skipBtn.addEventListener('click', function () {
+            if (window.__BOOT_SKIPPED__) return;
+            window.__BOOT_SKIPPED__ = true;
+            var el = document.getElementById('boot-loading');
+            if (el) el.classList.add('boot-warp');
+          });
+        }
       })();
     </script>
     <style>
@@ -138,6 +150,19 @@
         transform: rotate(-4deg) scale(1.4);
         animation: boot-seal-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
         box-shadow: 0 4px 16px rgb(var(--c-zhusha-rgb) / 0.3);
+        cursor: pointer;
+        padding: 0;
+        font-family: 'Noto Serif SC', serif;
+        appearance: none;
+        -webkit-appearance: none;
+      }
+      .boot-seal:hover {
+        transform: rotate(-4deg) scale(1.5);
+        box-shadow: 0 6px 22px rgb(var(--c-zhusha-rgb) / 0.45);
+      }
+      .boot-seal:focus-visible {
+        outline: 3px solid rgb(var(--c-daiqing-rgb));
+        outline-offset: 4px;
       }
       @keyframes boot-seal-in {
         0% { opacity: 0; transform: rotate(-12deg) scale(2); }

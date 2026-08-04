@@ -493,7 +493,7 @@ export default function AgentPanel({ open, onBack }: AgentPanelProps) {
             <div className="mt-3 pt-3 border-t border-dashed border-qingbi/15">
               <div className="flex items-baseline gap-2 mb-2.5">
                 <span className="font-song text-xs text-daiqing tracking-wider">凭据</span>
-                <span className="font-song text-[9px] text-qingbi/40 tracking-widest">
+                <span className="font-song text-[9px] text-qingbi/60 tracking-widest">
                   KEY · {modelDisplayName(s.agentModel, s.agentCustomName)}
                 </span>
                 <span className="flex-1 h-px bg-qingbi/10" />
@@ -530,7 +530,7 @@ export default function AgentPanel({ open, onBack }: AgentPanelProps) {
                   maxLength={200}
                 />
               </div>
-              <p className="font-song text-[10px] text-qingbi/45 mt-2 tracking-wider leading-relaxed">
+              <p className="font-song text-[10px] text-qingbi/65 mt-2 tracking-wider leading-relaxed">
                 · 密钥仅存于本机，不外传；切回此模型时凭据仍在。
               </p>
             </div>
@@ -629,7 +629,7 @@ function FieldInput({
         className="flex-1 px-3 py-2 font-song text-sm text-daiqing bg-xuanzhi/40 border border-qingbi/20 focus:border-qingbi focus:outline-none transition-colors tracking-wider"
         style={{ borderRadius: "2px" }}
       />
-      <span className="font-song text-[10px] text-qingbi/40 shrink-0">
+      <span className="font-song text-[10px] text-qingbi/60 shrink-0">
         {value.length}/{maxLength}
       </span>
     </div>

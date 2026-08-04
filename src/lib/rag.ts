@@ -128,9 +128,19 @@ async function compatibleRag(ctx: RagContext): Promise<RagResult> {
 
     const result = await chatWithLLM(messages, onChunk);
     if (result.ok && result.text.trim()) {
-      return { text: result.text, ok: true, source: "kb+llm", kbHits: hits };
+      // 仅当大模型回复实质引用了某条典据时 · 才作为 citations 回传
+      // 避免出现"正文谈诗、典据却是茶道"的语义错配
+      const citedHits = filterCitedHits(result.text, hits);
+      return {
+        text: result.text,
+        ok: true,
+        // 有实质引用记 kb+llm · 否则记 llm（提示注入了但未采信）
+        source: citedHits.length > 0 ? "kb+llm" : "llm",
+        kbHits: citedHits,
+      };
     }
-    return { text: result.text, ok: false, error: result.error, source: "fallback", kbHits: hits };
+    // 大模型不通 · 不再回传未采信的 kbHits · 避免 fallback 文本与典据错配
+    return { text: result.text, ok: false, error: result.error, source: "fallback" };
   }
 
   // 未命中 · 纯大模型 · 仍须带上朝代上下文
@@ -148,6 +158,28 @@ async function compatibleRag(ctx: RagContext): Promise<RagResult> {
     error: result.error,
     source: result.ok ? "llm" : "fallback",
   };
+}
+
+// 判定哪些 kbHits 被回复正文实质引用
+// 规则：去除空白后 · answer 正文与 reply 有 ≥ MIN_CITE_OVERLAP 字连续子串重叠
+//       或 reply 中出现了 hit.question 的核心词（≥4 字连续子串）
+const MIN_CITE_OVERLAP = 8;
+function filterCitedHits(reply: string, hits: KBEntry[]): KBEntry[] {
+  const norm = (s: string) => s.replace(/\s+/g, "");
+  const replyNorm = norm(reply);
+  return hits.filter((h) => {
+    const ansNorm = norm(h.answer);
+    // 答案正文连续子串出现在回复中
+    for (let i = 0; i + MIN_CITE_OVERLAP <= ansNorm.length; i++) {
+      if (replyNorm.includes(ansNorm.slice(i, i + MIN_CITE_OVERLAP))) return true;
+    }
+    // 或问题标题核心词（≥4 字）出现
+    const qNorm = norm(h.question);
+    for (let i = 0; i + 4 <= qNorm.length; i++) {
+      if (replyNorm.includes(qNorm.slice(i, i + 4))) return true;
+    }
+    return false;
+  });
 }
 
 export async function runRag(ctx: RagContext): Promise<RagResult> {

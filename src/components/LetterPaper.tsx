@@ -2,7 +2,10 @@
 import { useState } from "react";
 import type { Message } from "@/types";
 import Seal from "./Seal";
+import PersonaAvatar from "./PersonaAvatar";
 import { useDynastyMeta } from "@/store/themeStore";
+import { useSettingsStore } from "@/store/settingsStore";
+import { useChatStore } from "@/store/chatStore";
 
 interface LetterPaperProps {
   message: Message;
@@ -12,32 +15,14 @@ export default function LetterPaper({ message }: LetterPaperProps) {
   const [showThinking, setShowThinking] = useState(false);
   const hasThinking = message.hasThinking && message.thinking && message.thinking.trim().length > 0;
   const meta = useDynastyMeta();
+  const persona = useSettingsStore((s) => s.agentPersona);
+  const archiveMessage = useChatStore((s) => s.archiveMessage);
 
   return (
     <div className="flex justify-start animate-liftUp">
-      {/* Agent 头像 — 古风简笔角色 */}
+      {/* Agent 头像 — 随 agentPersona 变化的简笔角色 */}
       <div className="shrink-0 mr-3">
-        <div
-          className="w-10 h-10 flex items-center justify-center bg-qingbi/15 border border-qingbi/30"
-          style={{ borderRadius: "2px" }}
-          aria-label={meta.brand}
-        >
-          {/* 简笔书童头像 */}
-          <svg viewBox="0 0 40 40" className="w-7 h-7" aria-hidden="true">
-            {/* 发髻 */}
-            <ellipse cx="20" cy="9" rx="6" ry="3" fill="rgb(var(--c-daiqing-rgb))" />
-            {/* 脸 */}
-            <circle cx="20" cy="20" r="8" fill="rgb(var(--c-xuanzhi-rgb))" stroke="rgb(var(--c-daiqing-rgb))" strokeWidth="1.2" />
-            {/* 眼 */}
-            <circle cx="17" cy="19" r="0.8" fill="rgb(var(--c-daiqing-rgb))" />
-            <circle cx="23" cy="19" r="0.8" fill="rgb(var(--c-daiqing-rgb))" />
-            {/* 嘴 */}
-            <path d="M18,23 Q20,24.5 22,23" fill="none" stroke="rgb(var(--c-daiqing-rgb))" strokeWidth="1" strokeLinecap="round" />
-            {/* 衣领 */}
-            <path d="M12,30 L20,27 L28,30 L28,36 L12,36 Z" fill="rgb(var(--c-qingbi-rgb))" stroke="rgb(var(--c-daiqing-rgb))" strokeWidth="1" />
-            <line x1="20" y1="27" x2="20" y2="36" stroke="rgb(var(--c-daiqing-rgb))" strokeWidth="0.8" />
-          </svg>
-        </div>
+        <PersonaAvatar persona={persona} label={`${meta.brand} · ${persona}`} />
       </div>
 
       <div className="max-w-[88%] sm:max-w-[78%]">
@@ -97,16 +82,16 @@ export default function LetterPaper({ message }: LetterPaperProps) {
             <div
               className="mb-4 px-4 py-3 border-l-2 animate-liftUp"
               style={{
-                backgroundColor: "rgba(138,160,168,0.06)",
-                borderColor: "#8AA0A8",
+                backgroundColor: "rgb(var(--c-qingbi-light-rgb) / 0.08)",
+                borderColor: "rgb(var(--c-qingbi-light-rgb))",
               }}
             >
               <div className="flex items-center gap-1.5 mb-2">
-                <svg viewBox="0 0 16 16" className="w-3 h-3 text-[#8AA0A8]" aria-hidden="true">
+                <svg viewBox="0 0 16 16" className="w-3 h-3" style={{ color: "rgb(var(--c-qingbi-light-rgb))" }} aria-hidden="true">
                   <circle cx="8" cy="8" r="5.5" fill="none" stroke="currentColor" strokeWidth="1.2" />
                   <path d="M8,4 L8,12 M4,8 L12,8" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round" />
                 </svg>
-                <span className="font-song text-[10px] text-[#8AA0A8] tracking-widest">心源 · 所思之迹</span>
+                <span className="font-song text-[10px] tracking-widest" style={{ color: "rgb(var(--c-qingbi-light-rgb))" }}>心源 · 所思之迹</span>
               </div>
               <p
                 className="font-song text-xs text-daiqing/70 leading-relaxed whitespace-pre-wrap break-words"
@@ -160,13 +145,52 @@ export default function LetterPaper({ message }: LetterPaperProps) {
             </div>
           )}
 
-          {/* 落款印章 */}
+          {/* 落款印章 · 收信完成时钤印动画 · 上方墨痕定稿细线自中心向两侧铺开 */}
           {!message.streaming && (
-            <div className="mt-4 flex items-center justify-end gap-2">
-              <span className="font-song text-[10px] text-qingbi/50 tracking-widest">
-                {meta.signoff} · {new Date(message.timestamp).toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" })}
-              </span>
-              <Seal text={meta.brand} size={28} shape="square" rotate={4} />
+            <div className="mt-4">
+              {/* 墨痕定稿 · 笔锋收束时一道淡墨铺开 */}
+              <div
+                className="signature-line mb-3 animate-inkSettle"
+                style={{ transformOrigin: "center center" }}
+                aria-hidden="true"
+              />
+              <div className="flex items-center justify-end gap-2">
+                <span className="font-song text-[10px] text-qingbi/60 tracking-widest">
+                  {meta.signoff} · {new Date(message.timestamp).toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" })}
+                </span>
+                <Seal text={meta.brand} size={28} shape="square" rotate={4} stamp />
+              </div>
+
+              {/* 收入典籍 · compatible 模式华夏相关问题回复后 · 克制印章按钮 · 点击入库 user 库 */}
+              {message.canArchive && !message.archived && (
+                <div className="mt-2 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => archiveMessage(message.id)}
+                    className="group flex items-center gap-1.5 px-2.5 py-1 bg-xuanzhi-deep/40 border border-qingbi/20 hover:border-zhusha/50 hover:bg-xuanzhi-deep/70 transition-all duration-300"
+                    style={{ borderRadius: "2px" }}
+                    aria-label="收入典籍阁"
+                  >
+                    {/* 小卷轴图标 */}
+                    <svg viewBox="0 0 16 16" className="w-3 h-3 text-qingbi/60 group-hover:text-zhusha transition-colors" aria-hidden="true">
+                      <rect x="2" y="3" width="12" height="10" rx="0.5" fill="none" stroke="currentColor" strokeWidth="0.8" />
+                      <line x1="5" y1="6" x2="11" y2="6" stroke="currentColor" strokeWidth="0.6" />
+                      <line x1="5" y1="8" x2="11" y2="8" stroke="currentColor" strokeWidth="0.6" />
+                      <line x1="5" y1="10" x2="9" y2="10" stroke="currentColor" strokeWidth="0.6" />
+                    </svg>
+                    <span className="font-song text-[10px] text-qingbi/60 group-hover:text-zhusha tracking-widest transition-colors">
+                      收入典籍
+                    </span>
+                  </button>
+                </div>
+              )}
+              {/* 已收入 · 钤一枚小印示意 · 不再可操作 */}
+              {message.archived && (
+                <div className="mt-2 flex justify-end items-center gap-1.5 opacity-60">
+                  <Seal text="已藏" size={18} shape="square" rotate={-3} />
+                  <span className="font-song text-[10px] text-qingbi/50 tracking-widest">已入典籍阁</span>
+                </div>
+              )}
             </div>
           )}
         </div>

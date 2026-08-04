@@ -1,10 +1,14 @@
 {
   "name": "qingyan",
-  "version": "1.0.1",
+  "version": "1.2.0",
   "description": "青砚 · 国风 AI Agent · 四朝雅伴",
   "author": "QingYan Open Source",
   "license": "MIT",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/remyoli77/qingyan.git"
+  },
   "main": "electron/main.cjs",
   "scripts": {
     "dev": "vite",

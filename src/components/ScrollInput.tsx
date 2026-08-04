@@ -77,32 +77,36 @@ export default function ScrollInput({
           ${focused ? "border-qingbi shadow-[0_8px_28px_rgba(61,107,110,0.18)]" : ""}
         `}
         style={{
-          // 卷轴上下边缘的暗纹
+          // 卷轴上下边缘的暗纹 + 展开时左右内阴影模拟卷曲弧度
           backgroundImage:
             "linear-gradient(180deg, rgb(var(--c-qingbi-rgb) / 0.06) 0%, transparent 8%, transparent 92%, rgb(var(--c-qingbi-rgb) / 0.06) 100%)",
+          // 展开后加左右内阴影 · 模拟纸从轴上展开的卷曲立体感
+          boxShadow: opened
+            ? `inset 12px 0 16px -8px rgb(var(--c-daiqing-rgb) / 0.15), inset -12px 0 16px -8px rgb(var(--c-daiqing-rgb) / 0.15), 0 8px 24px rgb(var(--c-daiqing-rgb) / 0.12)`
+            : undefined,
           // 自中间向两侧缓缓展开 · clip-path 裁剪不使内容变形
           clipPath: opened ? "inset(0 0% 0 0%)" : "inset(0 50% 0 50%)",
-          transition: "clip-path 1s cubic-bezier(0.22, 1, 0.36, 1)",
+          transition: "clip-path 1s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.6s ease-out 0.4s",
         }}
       >
-        {/* 左轴头 · 置于卷轴主体内 · 随 textarea 增高自动居中 */}
+        {/* 左轴头 · 固定于左端 · 始终在位 · 仅透明度随展开渐显 */}
         <span
           className="scroll-cap"
           style={{
-            left: opened ? -10 : "calc(50% - 9px)",
+            left: -10,
             height: capH,
             opacity: opened ? 1 : 0,
-            transition: "left 1s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease-out",
+            transition: "opacity 0.5s ease-out 0.3s",
           }}
         />
-        {/* 右轴头 */}
+        {/* 右轴头 · 固定于右端 · 与左轴头对称 */}
         <span
           className="scroll-cap"
           style={{
-            right: opened ? -10 : "calc(50% - 9px)",
+            right: -10,
             height: capH,
             opacity: opened ? 1 : 0,
-            transition: "right 1s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease-out",
+            transition: "opacity 0.5s ease-out 0.3s",
           }}
         />
 

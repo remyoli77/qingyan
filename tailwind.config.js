@@ -9,11 +9,11 @@ export default {
     },
     extend: {
       colors: {
-        // 国风配色 — 通过 CSS 变量实现三朝切换 · rgb() 格式支持透明度修饰符
-        qingbi: "rgb(var(--c-qingbi-rgb) / <alpha-value>)",       // 主色 宋·青碧 / 明·青花蓝 / 秦·青铜绿
+        // 国风配色 — 通过 CSS 变量实现四朝切换 · rgb() 格式支持透明度修饰符
+        qingbi: "rgb(var(--c-qingbi-rgb) / <alpha-value>)",       // 主色 宋·青碧 / 明·青花蓝 / 秦·青铜绿 / 唐·紫宸
         qingbiDeep: "rgb(var(--c-qingbi-deep-rgb) / <alpha-value>)",
         qingbiLight: "rgb(var(--c-qingbi-light-rgb) / <alpha-value>)",
-        daiqing: "rgb(var(--c-daiqing-rgb) / <alpha-value>)",     // 深色 宋·黛青 / 明·墨蓝 / 秦·玄黑
+        daiqing: "rgb(var(--c-daiqing-rgb) / <alpha-value>)",     // 深色 宋·黛青 / 明·墨蓝 / 秦·玄黑 / 唐·墨紫
         daiqingSoft: "rgb(var(--c-daiqing-soft-rgb) / <alpha-value>)",
         xuanzhi: "rgb(var(--c-xuanzhi-rgb) / <alpha-value>)",     // 纸色 宋·宣纸 / 明·线装书白 / 秦·竹简黄
         xuanzhiDeep: "rgb(var(--c-xuanzhi-deep-rgb) / <alpha-value>)",
@@ -133,6 +133,18 @@ export default {
           '0%': { transform: 'translateY(0) scale(1)', opacity: '0.8' },
           '100%': { transform: 'translateY(-6px) scale(0.2)', opacity: '0' },
         },
+        // 落笔 · 一道墨痕自左向右延展 · 用户落笔时竹简上麻绳被笔锋带出
+        inkStretch: {
+          '0%': { transform: 'scaleX(0)', opacity: '0' },
+          '60%': { opacity: '0.85' },
+          '100%': { transform: 'scaleX(1)', opacity: '0.55' },
+        },
+        // 收信 · 信笺定稿时墨痕自中心向两侧铺开 · 模拟笔锋收束落定
+        inkSettle: {
+          '0%': { transform: 'scaleX(0)', opacity: '0' },
+          '40%': { opacity: '0.7' },
+          '100%': { transform: 'scaleX(1)', opacity: '0.4' },
+        },
       },
       animation: {
         inkSpread: 'inkSpread 1.2s ease-out forwards',
@@ -156,6 +168,8 @@ export default {
         chipFall: 'chipFall 1.2s ease-in infinite',
         carveFlash: 'carveFlash 1.2s ease-out infinite',
         emberRise: 'emberRise 1.6s ease-out infinite',
+        inkStretch: 'inkStretch 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards',
+        inkSettle: 'inkSettle 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards',
       },
     },
   },

@@ -30,6 +30,12 @@ export interface Message {
   thinking?: string;
   /** 是否有思考过程可供查看 */
   hasThinking?: boolean;
+  /** 是否可收入典籍阁 · compatible 模式华夏相关问题回复后置 true · 用户确认后归 user 库 */
+  canArchive?: boolean;
+  /** 是否已收入典籍 · 防止重复入库 */
+  archived?: boolean;
+  /** 是否触发外接库关联流程 · AI 回复专用 · 渲染时检测并触发 connectTick */
+  triggerConnect?: boolean;
 }
 
 export type TaskStatus = "pending" | "running" | "done";

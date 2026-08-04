@@ -10,7 +10,7 @@
 [![Release](https://github.com/remyoli77/qingyan/actions/workflows/release.yml/badge.svg)](./.github/workflows/release.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-daiqing.svg)](./LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Win%20%7C%20macOS%20%7C%20Linux%20%7C%20Web-zheshi.svg)](#下载安装)
-[![Version](https://img.shields.io/badge/Version-1.0.0-qingbi.svg)](./CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-1.2.0-qingbi.svg)](./CHANGELOG.md)
 
 **研墨铺纸 · 与君清话**
 

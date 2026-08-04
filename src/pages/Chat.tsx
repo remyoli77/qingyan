@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import TaskScroll from "@/components/TaskScroll";
 import MemoryPanel from "@/components/MemoryPanel";
 import DeskIndex from "@/components/DeskIndex";
+import LibraryScroll from "@/components/LibraryScroll";
 import BambooSlip from "@/components/BambooSlip";
 import LetterPaper from "@/components/LetterPaper";
 import ToolInvoke from "@/components/ToolInvoke";
@@ -37,6 +38,9 @@ export default function Chat({ onOpenSettings }: { onOpenSettings?: () => void }
   const sendUserMessage = useChatStore((s) => s.sendUserMessage);
 
   const [sidePanel, setSidePanel] = useState<SidePanel>("task");
+  const [leftPanel, setLeftPanel] = useState<"desk" | "library">("desk");
+  const [archiveTick, setArchiveTick] = useState(0);
+  const [connectTick, setConnectTick] = useState(0);
   const [traceOpen, setTraceOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const didInitRef = useRef(false);
@@ -61,6 +65,22 @@ export default function Chat({ onOpenSettings }: { onOpenSettings?: () => void }
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages, activeTool, isThinking]);
 
+  // 收入典籍后 · 递增 archiveTick 触发典籍阁刷新
+  const archivedCount = messages.filter((m) => m.archived).length;
+  useEffect(() => {
+    setArchiveTick((t) => t + 1);
+  }, [archivedCount]);
+
+  // AI 回复带 triggerConnect 标记 · 自动切到典籍阁 tab + 递增 connectTick 触发关联流程
+  const triggerConnectMsg = messages.find((m) => m.triggerConnect);
+  const triggerConnectId = triggerConnectMsg?.id;
+  useEffect(() => {
+    if (triggerConnectId) {
+      setLeftPanel("library");
+      setConnectTick((t) => t + 1);
+    }
+  }, [triggerConnectId]);
+
   function handleSend(text: string) {
     sendUserMessage(text);
   }
@@ -74,11 +94,40 @@ export default function Chat({ onOpenSettings }: { onOpenSettings?: () => void }
     <div className="min-h-screen flex flex-col">
       <Navbar showBack onOpenSettings={onOpenSettings} />
 
-      <div className="flex-1 max-w-7xl w-full mx-auto px-4 lg:px-6 py-5 grid grid-cols-1 lg:grid-cols-[300px_1fr_280px] gap-5">
-        {/* 左栏：案头 · 翰墨索引（移动端折叠） */}
+      <div className="flex-1 max-w-7xl w-full mx-auto px-4 lg:px-6 py-5 grid grid-cols-1 lg:grid-cols-[260px_1fr] xl:grid-cols-[300px_1fr_280px] gap-5">
+        {/* 左栏：案头 / 典籍阁 tab 切换（移动端折叠 · lg 起常驻） */}
         <aside className="hidden lg:block">
-          <div className="sticky top-20 h-[calc(100vh-7rem)] bg-xuanzhi-light/60 border border-qingbi/20 shadow-card overflow-hidden" style={{ borderRadius: "2px" }}>
-            <DeskIndex indexEntries={indexEntries} currentTopic={currentTopic} plan={taskPlan} />
+          <div className="sticky top-20 h-[calc(100vh-7rem)] bg-xuanzhi-light/60 border border-qingbi/20 shadow-card overflow-hidden flex flex-col" style={{ borderRadius: "2px" }}>
+            {/* tab 切换 · 案头 / 典籍阁 */}
+            <div className="flex gap-1 p-1 bg-qingbi/5 border-b border-qingbi/15">
+              <button
+                type="button"
+                onClick={() => setLeftPanel("desk")}
+                className={`flex-1 py-2 font-song text-xs tracking-widest transition-all duration-300 ${
+                  leftPanel === "desk" ? "bg-qingbi text-xuanzhi-light shadow-seal" : "text-qingbi/70 hover:text-daiqing"
+                }`}
+                style={{ borderRadius: "2px" }}
+              >
+                案头
+              </button>
+              <button
+                type="button"
+                onClick={() => setLeftPanel("library")}
+                className={`flex-1 py-2 font-song text-xs tracking-widest transition-all duration-300 ${
+                  leftPanel === "library" ? "bg-qingbi text-xuanzhi-light shadow-seal" : "text-qingbi/70 hover:text-daiqing"
+                }`}
+                style={{ borderRadius: "2px" }}
+              >
+                典籍阁
+              </button>
+            </div>
+            <div className="flex-1 overflow-hidden">
+              {leftPanel === "desk" ? (
+                <DeskIndex indexEntries={indexEntries} currentTopic={currentTopic} plan={taskPlan} />
+              ) : (
+                <LibraryScroll refreshTick={archiveTick} connectTick={connectTick} />
+              )}
+            </div>
           </div>
         </aside>
 
@@ -119,6 +168,21 @@ export default function Chat({ onOpenSettings }: { onOpenSettings?: () => void }
 
             {/* 消息流 · 含工具调用气泡与研思动画 */}
             <div className="flex-1 overflow-y-auto px-5 py-5 space-y-5" style={{ maxHeight: "calc(100vh - 18rem)" }}>
+              {/* 空状态 · 极端兜底（initConversation 通常会推欢迎语）· 研墨以待 */}
+              {messages.length === 0 && !isThinking && (
+                <div className="flex flex-col items-center justify-center py-16 opacity-70" aria-live="polite">
+                  <svg viewBox="0 0 64 64" className="w-12 h-12 text-qingbi/40 mb-3" aria-hidden="true">
+                    {/* 砚台 + 墨锭 · 静态简笔 */}
+                    <ellipse cx="32" cy="42" rx="20" ry="6" fill="rgb(var(--c-daiqing-rgb) / 0.15)" />
+                    <path d="M14,36 L50,36 L46,46 L18,46 Z" fill="rgb(var(--c-qingbi-rgb) / 0.18)" stroke="rgb(var(--c-qingbi-rgb) / 0.4)" strokeWidth="0.8" />
+                    <ellipse cx="32" cy="40" rx="10" ry="2.5" fill="rgb(var(--c-daiqing-rgb) / 0.5)" />
+                    <rect x="29" y="22" width="6" height="14" rx="1" fill="rgb(var(--c-daiqing-rgb) / 0.6)" />
+                  </svg>
+                  <span className="font-song text-sm text-qingbi/70 tracking-widest">研墨以待</span>
+                  <span className="mt-1 font-song text-[10px] text-qingbi/50 tracking-widest">落笔所求 · 鸿雁将至</span>
+                </div>
+              )}
+
               {messages.map((m) => (
                 <div key={m.id}>
                   {m.role === "user" ? (
@@ -154,20 +218,43 @@ export default function Chat({ onOpenSettings }: { onOpenSettings?: () => void }
             </div>
           </div>
 
-          {/* 移动端任务规划折叠区 */}
-          <details className="lg:hidden mt-4 bg-xuanzhi-light/60 border border-qingbi/20 shadow-card" style={{ borderRadius: "2px" }}>
+          {/* 折叠区 · xl 以下（含移动端与 lg）显示 · 支持 行军图/手札 tab 切换 */}
+          <details className="xl:hidden mt-4 bg-xuanzhi-light/60 border border-qingbi/20 shadow-card" style={{ borderRadius: "2px" }}>
             <summary className="px-5 py-3 cursor-pointer font-song text-sm text-daiqing tracking-wider flex items-center justify-between">
-              <span>行军图 · 任务规划</span>
+              <span>{sidePanel === "task" ? "行军图 · 任务规划" : "手札 · 对话记忆"}</span>
               <span className="text-xs text-qingbi/60">点此展开</span>
             </summary>
-            <div className="h-80 border-t border-qingbi/15">
-              <TaskScroll plan={taskPlan} />
+            <div className="h-80 border-t border-qingbi/15 flex flex-col">
+              {/* 折叠内 tab 切换 · 与右栏一致 */}
+              <div className="flex gap-1 p-1 bg-xuanzhi-deep/40 border-b border-qingbi/15">
+                <button
+                  onClick={() => setSidePanel("task")}
+                  className={`flex-1 py-2 font-song text-xs tracking-widest transition-all duration-300 ${
+                    sidePanel === "task" ? "bg-qingbi text-xuanzhi-light shadow-seal" : "text-qingbi/70 hover:text-daiqing"
+                  }`}
+                  style={{ borderRadius: "2px" }}
+                >
+                  行军图
+                </button>
+                <button
+                  onClick={() => setSidePanel("memory")}
+                  className={`flex-1 py-2 font-song text-xs tracking-widest transition-all duration-300 ${
+                    sidePanel === "memory" ? "bg-qingbi text-xuanzhi-light shadow-seal" : "text-qingbi/70 hover:text-daiqing"
+                  }`}
+                  style={{ borderRadius: "2px" }}
+                >
+                  手札
+                </button>
+              </div>
+              <div className="flex-1 overflow-hidden">
+                {sidePanel === "task" ? <TaskScroll plan={taskPlan} /> : <MemoryPanel memory={memory} />}
+              </div>
             </div>
           </details>
         </main>
 
-        {/* 右栏：手札记忆 / 任务规划切换 */}
-        <aside className="hidden lg:block">
+        {/* 右栏：手札记忆 / 任务规划切换 · xl 起常驻 · lg 及以下走折叠 */}
+        <aside className="hidden xl:block">
           <div className="sticky top-20 h-[calc(100vh-7rem)] flex flex-col gap-3">
             {/* 切换标签 */}
             <div className="flex gap-1 p-1 bg-xuanzhi-deep/40 border border-qingbi/20" style={{ borderRadius: "2px" }}>

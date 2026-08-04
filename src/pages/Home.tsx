@@ -8,6 +8,7 @@ import Seal from "@/components/Seal";
 import DynastySwitcher from "@/components/DynastySwitcher";
 import { useDynastyMeta } from "@/store/themeStore";
 import { useAppReady } from "@/lib/appReady";
+import { getFeatures } from "@/data/features";
 
 /**
  * 轻量滚动入场 · 元素进入视口时触发一次 · 之后不再重置
@@ -53,6 +54,8 @@ export default function Home({ onOpenSettings }: { onOpenSettings?: () => void }
   const appReady = useAppReady();
   const mid = useInView<HTMLElement>(0.15, appReady);
   const lower = useInView<HTMLElement>(0.15, appReady);
+  // 试问词 · 取当前朝代六事雅赏的前四条 · 朝代切换时自动换新
+  const prompts = getFeatures(meta.id).slice(0, 4).map((f) => f.initialQuery);
 
   function handleSubmit(text: string) {
     navigate("/chat", { state: { initialQuery: text } });
@@ -84,15 +87,8 @@ export default function Home({ onOpenSettings }: { onOpenSettings?: () => void }
           )}
         </div>
 
-        {/* 浮层：品牌名 + slogan — 随朝代变化 */}
+        {/* 浮层：品牌名 + slogan — 随朝代变化 · 留白至上 · 印章与落款移至底边 */}
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-          <Seal
-            text={meta.brand}
-            size={56}
-            shape="square"
-            rotate={-4}
-            className="mb-4 animate-inkSpread"
-          />
           <h1
             className="font-brush text-6xl sm:text-7xl text-daiqing tracking-[0.3em] animate-inkSpread"
             style={{ animationDelay: "0.3s", opacity: 0, textShadow: "0 2px 8px rgb(var(--c-xuanzhi-light-rgb) / 0.6)" }}
@@ -100,23 +96,28 @@ export default function Home({ onOpenSettings }: { onOpenSettings?: () => void }
             {meta.brand}
           </h1>
           <p
-            className="mt-4 font-song text-base sm:text-lg text-daiqing/80 tracking-[0.4em] animate-inkSpread"
-            style={{ animationDelay: "0.6s", opacity: 0 }}
+            className="mt-5 font-song text-base sm:text-lg text-daiqing/80 tracking-[0.4em] animate-inkSpread"
+            style={{ animationDelay: "0.7s", opacity: 0 }}
           >
             {meta.slogan}
           </p>
-          <p
-            className="mt-2 font-song text-xs text-qingbi/60 tracking-widest animate-inkSpread"
-            style={{ animationDelay: "0.9s", opacity: 0 }}
-          >
-            {meta.subtitle}
-          </p>
         </div>
 
-        {/* 卷轴底边落款 — 朝代印文 */}
-        <div className="absolute bottom-2 right-6 flex items-center gap-2">
-          <span className="font-song text-[10px] text-qingbi/50 tracking-widest">{meta.vibe}</span>
-          <Seal text={meta.sealText} size={24} shape="round" rotate={6} />
+        {/* 卷轴底边落款 — 副标 + 朝代意境 + 印文 · 淡入显于底边 */}
+        <div className="absolute bottom-3 left-0 right-0 flex items-center justify-between px-6">
+          <span
+            className="font-song text-xs text-qingbi/70 tracking-widest animate-inkSpread"
+            style={{ animationDelay: "1.1s", opacity: 0 }}
+          >
+            {meta.subtitle}
+          </span>
+          <div
+            className="flex items-center gap-2 animate-inkSpread"
+            style={{ animationDelay: "1.3s", opacity: 0 }}
+          >
+            <span className="font-song text-[10px] text-qingbi/70 tracking-widest">{meta.vibe}</span>
+            <Seal text={meta.sealText} size={24} shape="round" rotate={6} />
+          </div>
         </div>
       </section>
 
@@ -142,15 +143,10 @@ export default function Home({ onOpenSettings }: { onOpenSettings?: () => void }
 
           <ScrollInput onSubmit={handleSubmit} reveal={mid.inView} />
 
-          {/* 竹简提示词 */}
+          {/* 竹简提示词 · 取当前朝代六事雅赏 · 切换朝代自动换新 */}
           <div className="mt-10 flex flex-wrap items-center justify-center gap-2.5">
             <span className="font-song text-xs text-qingbi/50 mr-1 tracking-widest">试问：</span>
-            {[
-              "为我拟一首七言绝句，题作「秋山夜雨」",
-              "解读北宋范宽《溪山行旅图》",
-              "详述宋代点茶法的器具与工序",
-              "今日霜降，应如何养生与赏景",
-            ].map((s, i) => (
+            {prompts.map((s, i) => (
               <button
                 key={i}
                 onClick={() => handleSubmit(s)}

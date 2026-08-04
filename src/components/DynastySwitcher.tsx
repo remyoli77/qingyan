@@ -73,6 +73,23 @@ export default function DynastySwitcher({ compact = false }: DynastySwitcherProp
               }}
             >
               {meta.char}
+
+              {/* hover 预览卡 · 朝代名 + 意境短语 · 浮于下方 · CSS only */}
+              {!compact && (
+                <span
+                  className="pointer-events-none absolute left-1/2 top-full mt-2 z-20 whitespace-nowrap px-2.5 py-1.5 bg-xuanzhi-light border border-qingbi/30 shadow-card transition-all duration-200"
+                  style={{
+                    borderRadius: "2px",
+                    transform: `translateX(-50%) translateY(${isHovered ? "0" : "-4px"})`,
+                    opacity: isHovered ? 1 : 0,
+                    visibility: isHovered ? "visible" : "hidden",
+                  }}
+                  role="tooltip"
+                >
+                  <span className="block font-song text-[11px] text-daiqing tracking-wider">{meta.name}</span>
+                  <span className="block font-song text-[9px] text-qingbi/70 tracking-widest mt-0.5">{meta.vibe}</span>
+                </span>
+              )}
             </button>
           );
         })}
