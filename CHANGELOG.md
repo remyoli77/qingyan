@@ -2,6 +2,45 @@
 
 本格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本号遵循 [Semantic Versioning](https://semver.org/lang/zh-CN/)。
 
+## [1.2.1] - 2026-08-04
+
+工程化加固版本：补测试、修依赖漏洞、优化安全与加载性能。
+
+### 新增
+
+- **单元测试**：引入 vitest + fake-indexeddb，覆盖核心逻辑：
+  - `sse.ts`：三家 LLM（OpenAI 兼容 / Anthropic / Gemini）流式增量与非流式全文解析、SSE 缓冲消费
+  - `rag.ts`：蒸馏清洗 `distillAnswer`、典据引用判定 `filterCitedHits`
+  - `huaxiaFilter.ts`：华夏相关性判定与标签提取
+  - `markdownParser.ts`：frontmatter 解析、md ↔ KBEntry 互转
+  - `knowledgeBase.ts`：检索排序、hits 自增、蒸馏合并、删除保护、统计（IndexedDB 实测）
+  - `settingsStore.ts`：设置 v1→v2 迁移
+- **CI 接入测试**：`.github/workflows/ci.yml` 增加 Test 步骤（typecheck + lint + test + build）。
+- 脚本：`npm run test` / `npm run test:watch` / `npm run test:coverage`。
+
+### 优化
+
+- **抽取纯解析层 `src/lib/sse.ts`**：LLM 响应解析与 fetch 编排解耦，可单测、可复用。
+- **Gemini 密钥改走请求头**：`x-goog-api-key` 替代 URL query，避免密钥进日志/Referrer。
+- **路由懒加载**：Home / Chat 分包（React.lazy + Suspense），消除 >500kB 主包告警。
+- **蒸馏落款清洗修正**：支持 `「青砚谨复」` / `〔青砚谨复〕` 尾部引号落款剥离。
+- **清理死代码**：移除 Gemini 分支未使用的 `lastUser` 计算。
+
+### 修复
+
+- **欢迎界面 → 主界面过渡丢失**：首页品牌大字 / slogan / 远山入场动画原为随组件挂载即播放；路由懒加载分包后 Home 挂载提前，这些动画在开场遮罩之下播完，遮罩揭开时内容已是静态，观感上"过渡消失"。已改为与中下段 section 一致，等 `appReady`（开场结束）后再播放，恢复「时空穿越 → 品牌浮现 → 远山展开」的连贯过渡。
+
+### 安全
+
+- **electron 33 → 43**：修复 20+ 条已公开漏洞（use-after-free、注入等），33 已 EOL。
+- **electron-builder 25 → 26.15.3**：修复 `tar`（critical）与 builder-util-runtime 链漏洞。
+- `postcss` / `brace-expansion` 自动修复。
+- 说明：`react-router` 7.18.1 的 RSC CSRF advisory（GHSA-qwww-vcr4-c8h2）仅影响 RSC/框架模式，本项目为 library 模式（HashRouter + 普通 Routes）不受影响，暂不升级 v8。
+
+### 测试
+
+- 本地全量验证：`npm run check` / `npm run lint` / `npm run test` / `npm run build` 全部通过。
+
 ## [1.2.0] - 2026-08-03
 
 外接知识库实时关联版本。

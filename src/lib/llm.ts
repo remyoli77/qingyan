@@ -9,6 +9,7 @@ import {
   type AgentDepth,
 } from "@/store/settingsStore";
 import { DYNASTIES, useThemeStore } from "@/store/themeStore";
+import { consumeSSEBuffer, extractFull } from "./sse";
 
 const personaDesc: Record<AgentPersona, string> = {
   shutong: "你是书童，伶俐勤谨，侍砚磨墨，自称「小童」，对用户敬称「公子」",
@@ -82,6 +83,10 @@ export async function chatWithLLM(
   }
 
   const base = cfg.baseUrl.replace(/\/+$/, "");
+  // 安全：仅允许 http/https 协议 · 防 file://、data: 等非预期协议
+  if (!/^https?:\/\//i.test(base)) {
+    return { text: "", ok: false, error: "灵台 baseUrl 仅支持 http/https" };
+  }
   const sys = buildSystemPrompt();
   const fullMessages = [{ role: "system", content: sys }, ...messages];
 
@@ -119,24 +124,25 @@ export async function chatWithLLM(
       };
     } else if (style === "gemini") {
       // Gemini generateContent
-      const lastUser = [...messages].reverse().find((m) => m.role === "user");
       const contents = messages.map((m) => ({
         role: m.role === "assistant" ? "model" : "user",
         parts: [{ text: m.content }],
       }));
-      url = `${base}/models/${cfg.model}:generateContent?key=${encodeURIComponent(cfg.key)}`;
+      url = `${base}/models/${cfg.model}:generateContent`;
       init = {
         method: "POST",
         mode: "cors",
         signal: ctrl.signal,
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": cfg.key,
+        },
         body: JSON.stringify({
           systemInstruction: { parts: [{ text: sys }] },
           contents,
           generationConfig: { maxOutputTokens: 2048 },
         }),
       };
-      void lastUser;
     } else {
       // OpenAI 兼容
       url = `${base}/chat/completions`;
@@ -175,23 +181,11 @@ export async function chatWithLLM(
         const { done, value } = await reader.read();
         if (done) break;
         buf += decoder.decode(value, { stream: true });
-        const lines = buf.split("\n");
-        buf = lines.pop() || "";
-        for (const line of lines) {
-          const t = line.trim();
-          if (!t || !t.startsWith("data:")) continue;
-          const data = t.slice(5).trim();
-          if (data === "[DONE]") continue;
-          try {
-            const j = JSON.parse(data);
-            const delta = extractDelta(j, style);
-            if (delta) {
-              agg += delta;
-              onChunk(delta);
-            }
-          } catch {
-            /* 跳过非 JSON 行 */
-          }
+        const { deltas, rest } = consumeSSEBuffer(buf, style);
+        buf = rest;
+        for (const delta of deltas) {
+          agg += delta;
+          onChunk(delta);
         }
       }
       return { text: agg, ok: true };
@@ -206,37 +200,4 @@ export async function chatWithLLM(
     if (err instanceof Error && err.name === "AbortError") return { text: "", ok: false, error: "灵台久候不至 · 超时" };
     return { text: "", ok: false, error: "灵台未通 · 跨域阻隔恐需代理" };
   }
-}
-
-// 各家 API 响应结构各异 · 此处用宽松索引签名读取 · 已知字段
-type ApiResponse = Record<string, unknown>;
-
-function extractDelta(j: ApiResponse, style: string): string {
-  if (style === "anthropic") {
-    if (j?.type === "content_block_delta") {
-      const delta = j.delta as { text?: string } | undefined;
-      return delta?.text ?? "";
-    }
-    return "";
-  }
-  if (style === "gemini") {
-    const candidates = j.candidates as Array<{ content?: { parts?: Array<{ text?: string }> } }> | undefined;
-    return candidates?.[0]?.content?.parts?.[0]?.text ?? "";
-  }
-  // openai
-  const choices = j.choices as Array<{ delta?: { content?: string } }> | undefined;
-  return choices?.[0]?.delta?.content ?? "";
-}
-
-function extractFull(j: ApiResponse, style: string): string {
-  if (style === "anthropic") {
-    const content = (j.content as Array<{ text?: string }> | undefined) ?? [];
-    return content.map((c) => c?.text ?? "").join("");
-  }
-  if (style === "gemini") {
-    const candidates = j.candidates as Array<{ content?: { parts?: Array<{ text?: string }> } }> | undefined;
-    return candidates?.[0]?.content?.parts?.[0]?.text ?? "";
-  }
-  const choices = j.choices as Array<{ message?: { content?: string } }> | undefined;
-  return choices?.[0]?.message?.content ?? "";
 }

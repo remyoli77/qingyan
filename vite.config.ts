@@ -10,6 +10,8 @@ export default defineConfig({
     sourcemap: 'hidden',
   },
   server: {
+    port: 5273,           // 固定端口 · 避开 5173（与 codex 等 dev server 冲突）
+    strictPort: true,     // 端口被占直接报错 · 不自动跳号（避免 main.cjs 加载错页面）
     allowedHosts: true,
   },
   plugins: [

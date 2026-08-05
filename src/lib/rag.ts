@@ -24,11 +24,13 @@ export interface RagResult {
 }
 
 // 从大模型回复中蒸馏出有用的知识正文 · 用于补齐
-function distillAnswer(raw: string): string {
+export function distillAnswer(raw: string): string {
   // 去除明显的前后缀寒暄与落款 · 取核心段落
   let t = raw.trim();
-  // 去落款
+  // 去灵台未通标记（异常兜底文案）
   t = t.replace(/〔灵台[^〕]*〕/g, "").trim();
+  // 去尾部落款（「青砚谨复」/〔青砚谨复〕 等 2-16 字引号包裹短语）
+  t = t.replace(/\s*[「〔][^」〕]{2,16}[」〕]\s*$/g, "").trim();
   // 若过长 · 取前 800 字
   if (t.length > 800) t = t.slice(0, 800) + "…";
   return t;
@@ -164,7 +166,7 @@ async function compatibleRag(ctx: RagContext): Promise<RagResult> {
 // 规则：去除空白后 · answer 正文与 reply 有 ≥ MIN_CITE_OVERLAP 字连续子串重叠
 //       或 reply 中出现了 hit.question 的核心词（≥4 字连续子串）
 const MIN_CITE_OVERLAP = 8;
-function filterCitedHits(reply: string, hits: KBEntry[]): KBEntry[] {
+export function filterCitedHits(reply: string, hits: KBEntry[]): KBEntry[] {
   const norm = (s: string) => s.replace(/\s+/g, "");
   const replyNorm = norm(reply);
   return hits.filter((h) => {

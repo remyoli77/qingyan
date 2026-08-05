@@ -118,6 +118,29 @@ const AGENT_DEFAULTS = {
   agentCustomName: "",
 };
 
+// v1 → v2: agentApiConfigs 由 {key, base} 改为 {key, baseUrl, model}，并补 custom
+// 独立导出便于单测
+export function migrateSettings(
+  persisted: Record<string, unknown> | undefined,
+  version: number,
+): Record<string, unknown> | undefined {
+  if (version < 2 && persisted && persisted.agentApiConfigs) {
+    const fresh = buildApiConfigs();
+    (Object.keys(fresh) as AgentModel[]).forEach((k) => {
+      const old = (persisted.agentApiConfigs as Record<string, { key?: string; base?: string; baseUrl?: string; model?: string }>)[k];
+      if (old) {
+        fresh[k] = {
+          key: old.key ?? "",
+          baseUrl: old.base ?? old.baseUrl ?? fresh[k].baseUrl,
+          model: old.model ?? fresh[k].model,
+        };
+      }
+    });
+    (persisted as Record<string, unknown>).agentApiConfigs = fresh;
+  }
+  return persisted;
+}
+
 export const useSettingsStore = create<SettingsState>()(
   persist(
     (set) => ({
@@ -149,24 +172,7 @@ export const useSettingsStore = create<SettingsState>()(
     {
       name: "qingyan-settings",
       version: 2,
-      migrate: (persisted: Record<string, unknown> | undefined, version: number) => {
-        // v1 → v2: agentApiConfigs 由 {key, base} 改为 {key, baseUrl, model}，并补 custom
-        if (version < 2 && persisted && persisted.agentApiConfigs) {
-          const fresh = buildApiConfigs();
-          (Object.keys(fresh) as AgentModel[]).forEach((k) => {
-            const old = (persisted.agentApiConfigs as Record<string, { key?: string; base?: string; baseUrl?: string; model?: string }>)[k];
-            if (old) {
-              fresh[k] = {
-                key: old.key ?? "",
-                baseUrl: old.base ?? old.baseUrl ?? fresh[k].baseUrl,
-                model: old.model ?? fresh[k].model,
-              };
-            }
-          });
-          (persisted as Record<string, unknown>).agentApiConfigs = fresh;
-        }
-        return persisted;
-      },
+      migrate: migrateSettings,
     },
   ),
 );

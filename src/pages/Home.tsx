@@ -65,7 +65,7 @@ export default function Home({ onOpenSettings }: { onOpenSettings?: () => void }
     <div className="min-h-screen flex flex-col">
       {/* 顶部山水长卷 */}
       <section className="relative w-full overflow-hidden border-b-2 border-qingbi/20">
-        <ScrollMountains className="w-full h-[42vh] min-h-[280px] block" animated />
+        <ScrollMountains className="w-full h-[42vh] min-h-[280px] block" animated={appReady} />
 
         {/* 右上角 · 朝代切换 + 格物设置浮动按钮 — 印章式，不破坏山水沉浸感 */}
         <div className="absolute top-4 right-5 z-10 flex items-center gap-2">
@@ -90,13 +90,13 @@ export default function Home({ onOpenSettings }: { onOpenSettings?: () => void }
         {/* 浮层：品牌名 + slogan — 随朝代变化 · 留白至上 · 印章与落款移至底边 */}
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
           <h1
-            className="font-brush text-6xl sm:text-7xl text-daiqing tracking-[0.3em] animate-inkSpread"
+            className={`font-brush text-6xl sm:text-7xl text-daiqing tracking-[0.3em] ${appReady ? "animate-inkSpread" : ""}`}
             style={{ animationDelay: "0.3s", opacity: 0, textShadow: "0 2px 8px rgb(var(--c-xuanzhi-light-rgb) / 0.6)" }}
           >
             {meta.brand}
           </h1>
           <p
-            className="mt-5 font-song text-base sm:text-lg text-daiqing/80 tracking-[0.4em] animate-inkSpread"
+            className={`mt-5 font-song text-base sm:text-lg text-daiqing/80 tracking-[0.4em] ${appReady ? "animate-inkSpread" : ""}`}
             style={{ animationDelay: "0.7s", opacity: 0 }}
           >
             {meta.slogan}
@@ -106,13 +106,13 @@ export default function Home({ onOpenSettings }: { onOpenSettings?: () => void }
         {/* 卷轴底边落款 — 副标 + 朝代意境 + 印文 · 淡入显于底边 */}
         <div className="absolute bottom-3 left-0 right-0 flex items-center justify-between px-6">
           <span
-            className="font-song text-xs text-qingbi/70 tracking-widest animate-inkSpread"
+            className={`font-song text-xs text-qingbi/70 tracking-widest ${appReady ? "animate-inkSpread" : ""}`}
             style={{ animationDelay: "1.1s", opacity: 0 }}
           >
             {meta.subtitle}
           </span>
           <div
-            className="flex items-center gap-2 animate-inkSpread"
+            className={`flex items-center gap-2 ${appReady ? "animate-inkSpread" : ""}`}
             style={{ animationDelay: "1.3s", opacity: 0 }}
           >
             <span className="font-song text-[10px] text-qingbi/70 tracking-widest">{meta.vibe}</span>

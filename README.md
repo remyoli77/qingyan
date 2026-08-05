@@ -164,9 +164,10 @@ npm run dist:win    # Windows
 npm run dist:mac    # macOS
 npm run dist:linux  # Linux
 
-# 类型检查 / Lint
+# 类型检查 / Lint / 测试
 npm run check
 npm run lint
+npm run test
 ```
 
 ## 技术栈

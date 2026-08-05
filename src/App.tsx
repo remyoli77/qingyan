@@ -1,12 +1,19 @@
+import { lazy, Suspense, useEffect, useState } from "react";
 import { HashRouter as Router, Routes, Route, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
-import Home from "@/pages/Home";
-import Chat from "@/pages/Chat";
 import SettingsDrawer from "@/components/SettingsDrawer";
 import { ensureKBSeeded } from "@/lib/kbInit";
 import { useThemeStore, applyDynastyClass } from "@/store/themeStore";
 import { ambience } from "@/lib/ambience";
 import { validateVaultOnBoot } from "@/store/externalStore";
+
+// 路由懒加载 · 分包减小首屏主包体积
+const Home = lazy(() => import("@/pages/Home"));
+const Chat = lazy(() => import("@/pages/Chat"));
+
+/** 分包加载占位 · 以宣纸底色承接 · 避免白屏闪烁 */
+function PageFallback() {
+  return <div style={{ minHeight: "100vh", backgroundColor: "rgb(var(--c-xuanzhi-rgb))" }} />;
+}
 
 /**
  * 路由出口 · 以顶层路由为 key 包裹
@@ -18,11 +25,13 @@ function PageRoutes({ onOpenSettings }: { onOpenSettings: () => void }) {
   const pageKey = location.pathname === "/" ? "home" : "chat";
   return (
     <div key={pageKey} className="animate-pageEnter">
-      <Routes location={location}>
-        <Route path="/" element={<Home onOpenSettings={onOpenSettings} />} />
-        <Route path="/chat" element={<Chat onOpenSettings={onOpenSettings} />} />
-        <Route path="/chat/:topic" element={<Chat onOpenSettings={onOpenSettings} />} />
-      </Routes>
+      <Suspense fallback={<PageFallback />}>
+        <Routes location={location}>
+          <Route path="/" element={<Home onOpenSettings={onOpenSettings} />} />
+          <Route path="/chat" element={<Chat onOpenSettings={onOpenSettings} />} />
+          <Route path="/chat/:topic" element={<Chat onOpenSettings={onOpenSettings} />} />
+        </Routes>
+      </Suspense>
     </div>
   );
 }
